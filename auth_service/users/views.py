@@ -14,6 +14,7 @@ from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from users.command.handlers import CreateUserHandler
 from users.command.serializers import CreateUserSerializer
@@ -56,6 +57,8 @@ class GetUserView(APIView):
     Consulta exclusivamente el read model (read_db).
     La view nunca importa ni conoce UserView directamente.
     """
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request: Request, pk: uuid.UUID) -> Response:
         # Paso 1 — Ejecutar query; toda la lógica vive en el handler

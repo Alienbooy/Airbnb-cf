@@ -13,6 +13,15 @@ from pathlib import Path
 
 from decouple import Csv, config
 
+
+def _parse_debug(value):
+    normalized = str(value).strip().lower()
+    if normalized in {"1", "true", "yes", "on", "debug"}:
+        return True
+    if normalized in {"0", "false", "no", "off", "release"}:
+        return False
+    return bool(value)
+
 # ---------------------------------------------------------------------------
 # Rutas base
 # ---------------------------------------------------------------------------
@@ -24,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY", default="si-no-tiene-el-env-se-pone-este-por-defecto")
 
 
-DEBUG = config("DEBUG", default=True, cast=bool)
+DEBUG = config("DEBUG", default=True, cast=_parse_debug)
 
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=Csv())
 
@@ -121,12 +130,17 @@ DATABASE_ROUTERS = ["users.db_router.router.CQRSRouter"]
 # Django REST Framework
 # ---------------------------------------------------------------------------
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "users.auth.authentication.JWTAuthentication",
+    ],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
     ],
+    "UNAUTHENTICATED_USER": None,
+    "UNAUTHENTICATED_TOKEN": None,
 }
 
 # ---------------------------------------------------------------------------

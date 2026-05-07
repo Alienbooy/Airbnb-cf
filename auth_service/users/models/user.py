@@ -7,7 +7,7 @@ sensibles (password hasheado) para operaciones de escritura.
 
 import uuid
 
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password, make_password
 from django.db import models
 
 
@@ -30,6 +30,10 @@ class User(models.Model):
     def set_password(self, raw_password: str) -> None:
         """Hashea y asigna el password"""
         self.password = make_password(raw_password)
+
+    def check_password(self, raw_password: str) -> bool:
+        """Compara un password en texto plano contra el hash almacenado."""
+        return check_password(raw_password, self.password)
 
     def __str__(self) -> str:
         return self.username
