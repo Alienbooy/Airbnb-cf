@@ -1,0 +1,447 @@
+{
+  "meta": {
+    "app": "StayBnb",
+    "apiGatewayBasePath": "http://localhost:8080",
+    "roles": ["guest", "host", "admin"],
+    "listingStatuses": ["active", "inactive", "pending", "rejected"],
+    "reservationStatuses": ["pending", "confirmed", "checked_in", "completed", "cancelled"],
+    "paymentStatuses": ["pending", "paid", "failed", "refunded"]
+  },
+  "auth": {
+    "loginRequest": {
+      "email": "ana.garcia@example.com",
+      "password": "Password123!"
+    },
+    "loginResponse": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock.token",
+      "user": {
+        "id": "usr_1001",
+        "firstName": "Ana",
+        "lastName": "Garcia",
+        "email": "ana.garcia@example.com",
+        "role": "guest",
+        "phone": "+54 11 5555 1001",
+        "status": "active",
+        "createdAt": "2026-05-10T14:20:00.000Z"
+      }
+    },
+    "registerRequest": {
+      "firstName": "Ana",
+      "lastName": "Garcia",
+      "email": "ana.garcia@example.com",
+      "password": "Password123!",
+      "confirmPassword": "Password123!",
+      "role": "guest"
+    },
+    "registerResponse": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6Im1vY2sucmVnaXN0ZXI",
+      "user": {
+        "id": "usr_1001",
+        "firstName": "Ana",
+        "lastName": "Garcia",
+        "email": "ana.garcia@example.com",
+        "role": "guest",
+        "status": "active",
+        "createdAt": "2026-05-10T14:20:00.000Z"
+      }
+    },
+    "profileResponse": {
+      "id": "usr_1001",
+      "firstName": "Ana",
+      "lastName": "Garcia",
+      "email": "ana.garcia@example.com",
+      "role": "guest",
+      "phone": "+54 11 5555 1001",
+      "status": "active",
+      "preferences": {
+        "language": "es",
+        "currency": "USD",
+        "newsletter": true
+      },
+      "createdAt": "2026-05-10T14:20:00.000Z"
+    }
+  },
+  "listings": {
+    "summaryResponse": [
+      {
+        "id": "lst_2001",
+        "slug": "loft-moderno-en-palermo",
+        "title": "Loft moderno en Palermo",
+        "subtitle": "Luz natural, balcón y cowork friendly",
+        "city": "Buenos Aires",
+        "country": "Argentina",
+        "pricePerNight": 85,
+        "currency": "USD",
+        "rating": 4.92,
+        "reviewCount": 148,
+        "coverImage": "https://cf.bstatic.com/xdata/images/hotel/max500/502711306.jpg?k=abea2f27d6fabe74c3b880fa8c85677a6408ac8bc2e332de08b1b0e56ba67fae&o=",
+        "amenities": ["wifi", "airConditioning", "kitchen", "washer"],
+        "guests": 2,
+        "bedrooms": 1,
+        "beds": 1,
+        "baths": 1,
+        "host": {
+          "id": "hst_3001",
+          "firstName": "Lucia",
+          "lastName": "Mendez",
+          "superhost": true,
+          "responseRate": 98
+        }
+      },
+      {
+        "id": "lst_2002",
+        "slug": "casa-frente-al-mar-en-marbella",
+        "title": "Casa frente al mar en Marbella",
+        "subtitle": "Terraza privada y vista panoramica",
+        "city": "Marbella",
+        "country": "Spain",
+        "pricePerNight": 220,
+        "currency": "USD",
+        "rating": 4.87,
+        "reviewCount": 92,
+        "coverImage": "https://cf.bstatic.com/xdata/images/hotel/max1024x768/502711137.jpg?k=3dc279c41fd7c3812746b3ff2a67a53a7be097f040db3995d401999aeeb6b157&o=",
+        "amenities": ["pool", "wifi", "parking", "breakfast"],
+        "guests": 6,
+        "bedrooms": 3,
+        "beds": 4,
+        "baths": 2,
+        "host": {
+          "id": "hst_3002",
+          "firstName": "Carlos",
+          "lastName": "Ramos",
+          "superhost": false,
+          "responseRate": 94
+        }
+      },
+      {
+        "id": "lst_2003",
+        "slug": "cabana-en-la-montana-bariloche",
+        "title": "Cabaña en la montana de Bariloche",
+        "subtitle": "Chimenea, bosque y silencio total",
+        "city": "Bariloche",
+        "country": "Argentina",
+        "pricePerNight": 130,
+        "currency": "USD",
+        "rating": 4.96,
+        "reviewCount": 61,
+        "coverImage": "https://cf.bstatic.com/xdata/images/hotel/max500/502711306.jpg?k=abea2f27d6fabe74c3b880fa8c85677a6408ac8bc2e332de08b1b0e56ba67fae&o=",
+        "amenities": ["fireplace", "wifi", "parking", "lakeView"],
+        "guests": 4,
+        "bedrooms": 2,
+        "beds": 3,
+        "baths": 1,
+        "host": {
+          "id": "hst_3003",
+          "firstName": "Sofia",
+          "lastName": "Lopez",
+          "superhost": true,
+          "responseRate": 99
+        }
+      }
+    ],
+    "detailResponse": {
+      "id": "lst_2001",
+      "slug": "loft-moderno-en-palermo",
+      "title": "Loft moderno en Palermo",
+      "subtitle": "Luz natural, balcón y cowork friendly",
+      "description": "Un loft amplio y luminoso ideal para estadias cortas o largas. Tiene un balcon privado, espacio para trabajar y acceso rapido a cafes, transporte y parques.",
+      "city": "Buenos Aires",
+      "country": "Argentina",
+      "address": "Honduras 4800, Palermo",
+      "coordinates": {
+        "lat": -34.5895,
+        "lng": -58.4321
+      },
+      "pricePerNight": 85,
+      "currency": "USD",
+      "rating": 4.92,
+      "reviewCount": 148,
+      "guests": 2,
+      "bedrooms": 1,
+      "beds": 1,
+      "baths": 1,
+      "checkInTime": "15:00",
+      "checkOutTime": "11:00",
+      "houseRules": ["No smoking", "No pets", "No parties"],
+      "amenities": ["wifi", "airConditioning", "kitchen", "washer", "workspace", "balcony"],
+      "images": [
+        "https://images.example.com/listings/palermo-1.jpg",
+        "https://images.example.com/listings/palermo-2.jpg",
+        "https://images.example.com/listings/palermo-3.jpg"
+      ],
+      "host": {
+        "id": "hst_3001",
+        "firstName": "Lucia",
+        "lastName": "Mendez",
+        "bio": "Host dedicada a espacios modernos y bien ubicados.",
+        "superhost": true,
+        "responseRate": 98,
+        "responseTime": "within an hour"
+      },
+      "availability": {
+        "minNights": 2,
+        "maxNights": 21,
+        "blockedDates": ["2026-06-05", "2026-06-06", "2026-06-12"]
+      },
+      "status": "active",
+      "createdAt": "2026-01-15T10:10:00.000Z",
+      "updatedAt": "2026-05-20T18:45:00.000Z"
+    },
+    "createRequest": {
+      "title": "Loft moderno en Palermo",
+      "subtitle": "Luz natural, balcón y cowork friendly",
+      "description": "Un loft amplio y luminoso ideal para estadias cortas o largas.",
+      "city": "Buenos Aires",
+      "country": "Argentina",
+      "address": "Honduras 4800, Palermo",
+      "pricePerNight": 85,
+      "currency": "USD",
+      "guests": 2,
+      "bedrooms": 1,
+      "beds": 1,
+      "baths": 1,
+      "amenities": ["wifi", "kitchen", "balcony"],
+      "images": ["https://images.example.com/listings/palermo-1.jpg"]
+    },
+    "createResponse": {
+      "id": "lst_2004",
+      "status": "pending",
+      "createdAt": "2026-05-24T12:00:00.000Z"
+    }
+  },
+  "reservations": {
+    "summaryResponse": [
+      {
+        "id": "res_4001",
+        "listingId": "lst_2001",
+        "guestId": "usr_1001",
+        "guestName": "Ana Garcia",
+        "listingTitle": "Loft moderno en Palermo",
+        "city": "Buenos Aires",
+        "checkIn": "2026-06-20",
+        "checkOut": "2026-06-23",
+        "guests": 2,
+        "nights": 3,
+        "subtotal": 255,
+        "serviceFee": 25,
+        "total": 280,
+        "currency": "USD",
+        "status": "confirmed",
+        "paymentStatus": "paid",
+        "createdAt": "2026-05-12T09:10:00.000Z"
+      },
+      {
+        "id": "res_4002",
+        "listingId": "lst_2003",
+        "guestId": "usr_1001",
+        "guestName": "Ana Garcia",
+        "listingTitle": "Cabaña en la montana de Bariloche",
+        "city": "Bariloche",
+        "checkIn": "2026-07-01",
+        "checkOut": "2026-07-05",
+        "guests": 4,
+        "nights": 4,
+        "subtotal": 520,
+        "serviceFee": 40,
+        "total": 560,
+        "currency": "USD",
+        "status": "pending",
+        "paymentStatus": "pending",
+        "createdAt": "2026-05-18T13:25:00.000Z"
+      }
+    ],
+    "detailResponse": {
+      "id": "res_4001",
+      "listingId": "lst_2001",
+      "guestId": "usr_1001",
+      "hostId": "hst_3001",
+      "listingTitle": "Loft moderno en Palermo",
+      "checkIn": "2026-06-20",
+      "checkOut": "2026-06-23",
+      "guests": 2,
+      "nights": 3,
+      "pricePerNight": 85,
+      "subtotal": 255,
+      "serviceFee": 25,
+      "cleaningFee": 15,
+      "taxes": 18,
+      "total": 313,
+      "currency": "USD",
+      "status": "confirmed",
+      "paymentStatus": "paid",
+      "paymentMethod": "card",
+      "specialRequests": "Late check-in around 9pm.",
+      "guestSnapshot": {
+        "firstName": "Ana",
+        "lastName": "Garcia",
+        "email": "ana.garcia@example.com",
+        "phone": "+54 11 5555 1001"
+      },
+      "listingSnapshot": {
+        "title": "Loft moderno en Palermo",
+        "city": "Buenos Aires",
+        "coverImage": "https://images.example.com/listings/palermo-1.jpg"
+      },
+      "createdAt": "2026-05-12T09:10:00.000Z",
+      "updatedAt": "2026-05-12T09:12:00.000Z"
+    },
+    "createRequest": {
+      "listingId": "lst_2001",
+      "checkIn": "2026-06-20",
+      "checkOut": "2026-06-23",
+      "guests": 2,
+      "specialRequests": "Late check-in around 9pm."
+    },
+    "createResponse": {
+      "id": "res_4003",
+      "status": "pending",
+      "paymentStatus": "pending",
+      "createdAt": "2026-05-24T12:10:00.000Z"
+    }
+  },
+  "payments": {
+    "summaryResponse": [
+      {
+        "id": "pay_5001",
+        "reservationId": "res_4001",
+        "amount": 313,
+        "currency": "USD",
+        "method": "card",
+        "status": "paid",
+        "transactionRef": "txn_9f12a2",
+        "paidAt": "2026-05-12T09:13:00.000Z"
+      },
+      {
+        "id": "pay_5002",
+        "reservationId": "res_4002",
+        "amount": 560,
+        "currency": "USD",
+        "method": "card",
+        "status": "pending",
+        "transactionRef": null,
+        "paidAt": null
+      }
+    ],
+    "detailResponse": {
+      "id": "pay_5001",
+      "reservationId": "res_4001",
+      "amount": 313,
+      "currency": "USD",
+      "method": "card",
+      "status": "paid",
+      "provider": "stripe",
+      "transactionRef": "txn_9f12a2",
+      "fee": 9,
+      "refundAmount": 0,
+      "receiptUrl": "https://payments.example.com/receipts/pay_5001",
+      "paidAt": "2026-05-12T09:13:00.000Z"
+    },
+    "createRequest": {
+      "reservationId": "res_4003",
+      "method": "card",
+      "amount": 280,
+      "currency": "USD"
+    },
+    "createResponse": {
+      "id": "pay_5003",
+      "status": "paid",
+      "transactionRef": "txn_1ab23c",
+      "receiptUrl": "https://payments.example.com/receipts/pay_5003"
+    }
+  },
+  "admin": {
+    "dashboardResponse": {
+      "kpis": {
+        "totalUsers": 12840,
+        "activeHosts": 920,
+        "activeListings": 4830,
+        "bookingsThisMonth": 2140,
+        "grossRevenue": 862140,
+        "conversionRate": 3.8
+      },
+      "revenueSeries": [
+        { "month": "Jan", "value": 54000 },
+        { "month": "Feb", "value": 61000 },
+        { "month": "Mar", "value": 70000 },
+        { "month": "Apr", "value": 76000 },
+        { "month": "May", "value": 81000 }
+      ],
+      "recentUsers": [
+        {
+          "id": "usr_1001",
+          "name": "Ana Garcia",
+          "role": "guest",
+          "status": "active",
+          "createdAt": "2026-05-10T14:20:00.000Z"
+        },
+        {
+          "id": "usr_1002",
+          "name": "Lucia Mendez",
+          "role": "host",
+          "status": "active",
+          "createdAt": "2026-05-08T16:00:00.000Z"
+        }
+      ],
+      "recentModerationEvents": [
+        {
+          "id": "mod_7001",
+          "type": "listing_review",
+          "message": "New listing pending verification",
+          "severity": "medium",
+          "createdAt": "2026-05-24T10:00:00.000Z"
+        },
+        {
+          "id": "mod_7002",
+          "type": "refund_review",
+          "message": "Refund request approved",
+          "severity": "low",
+          "createdAt": "2026-05-23T19:40:00.000Z"
+        }
+      ]
+    },
+    "usersResponse": [
+      {
+        "id": "usr_1001",
+        "firstName": "Ana",
+        "lastName": "Garcia",
+        "email": "ana.garcia@example.com",
+        "role": "guest",
+        "status": "active"
+      },
+      {
+        "id": "usr_1002",
+        "firstName": "Lucia",
+        "lastName": "Mendez",
+        "email": "lucia@example.com",
+        "role": "host",
+        "status": "active"
+      },
+      {
+        "id": "usr_1003",
+        "firstName": "Marco",
+        "lastName": "Perez",
+        "email": "marco@example.com",
+        "role": "admin",
+        "status": "suspended"
+      }
+    ],
+    "reportsResponse": [
+      {
+        "id": "rep_8001",
+        "type": "property_quality",
+        "title": "Property photo mismatch",
+        "status": "open",
+        "priority": "high",
+        "createdAt": "2026-05-22T08:30:00.000Z"
+      },
+      {
+        "id": "rep_8002",
+        "type": "guest_support",
+        "title": "Payment dispute resolved",
+        "status": "closed",
+        "priority": "low",
+        "createdAt": "2026-05-21T11:10:00.000Z"
+      }
+    ]
+  }
+}
