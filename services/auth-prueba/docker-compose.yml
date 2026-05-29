@@ -1,0 +1,54 @@
+services:
+  auth_service:
+    build: .
+    container_name: auth_service
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      KAFKA_BROKER: kafka:9092
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - kafka
+
+  db:
+    image: postgres:16
+    container_name: auth_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  kafka:
+    image: redpandadata/redpanda:latest
+    container_name: auth_kafka
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp
+      - "1"
+      - --memory
+      - 1G
+      - --reserve-memory
+      - 0M
+      - --node-id
+      - "0"
+      - --check=false
+      - --kafka-addr
+      - PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - PLAINTEXT://kafka:9092
+    ports:
+      - "9092:9092"
+
+volumes:
+  db_data:

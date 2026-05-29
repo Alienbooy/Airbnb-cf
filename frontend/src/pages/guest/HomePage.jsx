@@ -1,10 +1,8 @@
-import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 
 import mockData from '../../mocks/api-mocks.json';
 
-const demoLogin = mockData.auth.loginRequest;
-const demoUser = mockData.auth.loginResponse.user;
 const demoListings = mockData.listings.summaryResponse;
 
 const heroStats = [
@@ -27,41 +25,7 @@ const highlights = [
 ];
 
 export default function HomePage() {
-  const navigate = useNavigate();
-  const [message, setMessage] = useState('');
-  const [form, setForm] = useState({
-    email: demoLogin.email,
-    password: demoLogin.password,
-  });
-
   const featuredListings = useMemo(() => demoListings.slice(0, 6), []);
-
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setForm((current) => ({ ...current, [name]: value }));
-    setMessage('');
-  }
-
-  function useDemoData() {
-    setForm({ ...demoLogin });
-    setMessage('Datos demo cargados. Pulsa Entrar para continuar.');
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault();
-
-    const emailMatches = form.email.trim().toLowerCase() === demoLogin.email.toLowerCase();
-    const passwordMatches = form.password === demoLogin.password;
-
-    if (!emailMatches || !passwordMatches) {
-      setMessage('Usa la cuenta demo que aparece abajo o carga los datos de ejemplo.');
-      return;
-    }
-
-    localStorage.setItem('token', mockData.auth.loginResponse.token);
-    localStorage.setItem('user', JSON.stringify(demoUser));
-    window.location.href = '/dashboard';
-  }
 
   return (
     <main className="alojaya-home">
@@ -83,9 +47,9 @@ export default function HomePage() {
         </nav>
 
         <div className="alojaya-actions">
-          <a className="alojaya-link" href="#login-panel">
+          <Link className="alojaya-link" to="/login">
             Ingresar
-          </a>
+          </Link>
           <button type="button" className="alojaya-iconBtn" aria-label="Cambiar idioma">
             🌐
           </button>
@@ -136,51 +100,27 @@ export default function HomePage() {
           </div>
         </div>
 
-        <aside className="alojaya-loginCard" id="login-panel">
-          <div className="alojaya-loginCard__badge">Login demo</div>
-          <h2>Entrá a tu cuenta</h2>
-          <p>Probá el acceso con los datos mockeados del proyecto.</p>
+        <aside className="alojaya-loginCard">
+          <img
+            className="alojaya-loginCard__image"
+            src={featuredListings[0].coverImage}
+            alt={featuredListings[0].title}
+          />
+          <div className="alojaya-loginCard__badge">Acceso de usuarios</div>
+          <h2>Entra para reservar, publicar o administrar.</h2>
+          <p>
+            El formulario de login vive en una pagina separada. Si todavia no tienes cuenta,
+            puedes registrarte desde ahi.
+          </p>
 
-          <form className="alojaya-form" onSubmit={handleSubmit}>
-            <label className="alojaya-field">
-              <span>Correo electrónico</span>
-              <input
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="ana.garcia@example.com"
-                autoComplete="email"
-              />
-            </label>
-
-            <label className="alojaya-field">
-              <span>Contraseña</span>
-              <input
-                name="password"
-                type="password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="Password123!"
-                autoComplete="current-password"
-              />
-            </label>
-
-            {message && <div className="alojaya-note">{message}</div>}
-
-            <button type="submit" className="alojaya-primaryBtn">
-              Entrar
-            </button>
-            <button type="button" className="alojaya-secondaryBtn" onClick={useDemoData}>
-              Cargar datos demo
-            </button>
-
-            <div className="alojaya-loginCard__hint">
-              <span>Demo</span>
-              <strong>{demoLogin.email}</strong>
-              <span>{demoLogin.password}</span>
-            </div>
-          </form>
+          <div className="alojaya-loginCard__actions">
+            <Link to="/login" className="alojaya-primaryBtn">
+              Ingresar
+            </Link>
+            <Link to="/register" className="alojaya-secondaryBtn">
+              Registrarse
+            </Link>
+          </div>
         </aside>
       </section>
 
@@ -519,6 +459,14 @@ export default function HomePage() {
           gap: 0.9rem;
         }
 
+        .alojaya-loginCard__image {
+          width: 100%;
+          aspect-ratio: 1.25 / 1;
+          object-fit: cover;
+          border-radius: 1.4rem;
+          display: block;
+        }
+
         .alojaya-loginCard h2 {
           margin: 0;
           font-size: 1.6rem;
@@ -529,6 +477,13 @@ export default function HomePage() {
           margin: 0;
           color: var(--alojaya-muted);
           line-height: 1.65;
+        }
+
+        .alojaya-loginCard__actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.75rem;
+          margin-top: auto;
         }
 
         .alojaya-form {
@@ -567,6 +522,10 @@ export default function HomePage() {
 
         .alojaya-primaryBtn,
         .alojaya-secondaryBtn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          text-decoration: none;
           border: 0;
           border-radius: 1rem;
           padding: 0.95rem 1rem;

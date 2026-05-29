@@ -1,0 +1,83 @@
+services:
+  apisix:
+    image: apache/apisix:3.8.0-debian
+    container_name: apisix
+    ports:
+      - "9080:9080"
+      - "9180:9180"
+    volumes:
+      - ./conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
+      - ./conf/apisix.yaml:/usr/local/apisix/conf/apisix.yaml:ro
+    depends_on:
+      - frontend
+      - auth_service
+
+  frontend:
+    image: node:20-alpine
+    container_name: frontend
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    environment:
+      VITE_API_GATEWAY_URL: http://localhost:9080
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+
+  auth_service:
+    build:
+      context: ./services/auth-prueba
+    container_name: auth_service
+    env_file:
+      - ./services/auth-prueba/.env
+    environment:
+      DB_HOST: auth_db
+      DB_PORT: 5432
+      KAFKA_BROKER: kafka:9092
+    volumes:
+      - ./services/auth-prueba:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth_db
+      - kafka
+
+  auth_db:
+    image: postgres:16
+    container_name: auth_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+      - ./services/auth-prueba/docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  kafka:
+    image: redpandadata/redpanda:latest
+    container_name: kafka
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp
+      - "1"
+      - --memory
+      - 1G
+      - --reserve-memory
+      - 0M
+      - --node-id
+      - "0"
+      - --check=false
+      - --kafka-addr
+      - PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - PLAINTEXT://kafka:9092
+    ports:
+      - "9092:9092"
+
+volumes:
+  auth_db_data:
+  frontend_node_modules:

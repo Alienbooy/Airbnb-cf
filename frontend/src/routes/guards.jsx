@@ -9,11 +9,5 @@ export function ProtectedRoute({ children, roles }) {
 }
 
 export function PublicRoute({ children }) {
-  const { user } = useAuth();
-  if (user) {
-    if (user.role === 'admin') return <Navigate to="/admin" replace />;
-    if (user.role === 'host') return <Navigate to="/host" replace />;
-    return <Navigate to="/" replace />;
-  }
   return children;
 }

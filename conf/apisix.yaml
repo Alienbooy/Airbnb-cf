@@ -1,26 +1,32 @@
-# APISIX declarative config for local development
-# Frontend: http://localhost:5173
-# Backend API: http://localhost:8000
-
-apisix:
-  node_listen: 9080
-  allow_admin: true
-  enable_admin_cors: true
-
-deployment:
-  role: traditional
-  role_traditional:
-    config_provider: yaml
-  admin:
-    admin_key:
-      - name: admin
-        key: "change-this-admin-key"
-        role: admin
+# APISIX declarative routes for local development.
+# Gateway and frontend entrypoint: http://localhost:9080
+# Frontend dev server: http://localhost:5173
+# Auth service: http://localhost:8000
 
 routes:
-  - uri: /api/*
-    name: backend-api
-    priority: 100
+  - id: auth-profile
+    name: auth-profile
+    uri: /auth/profile
+    priority: 120
+    methods:
+      - GET
+      - OPTIONS
+    plugins:
+      proxy-rewrite:
+        uri: /api/auth/me
+      cors:
+        allow_origins: "http://localhost:5173,http://127.0.0.1:5173,http://localhost:9080,http://127.0.0.1:9080"
+        allow_methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+        allow_headers: "Authorization,Content-Type,Accept,Origin,X-Requested-With"
+        expose_headers: "Authorization,Content-Type"
+        allow_credential: true
+        max_age: 3600
+    upstream_id: auth-service
+
+  - id: auth-api
+    name: auth-api
+    uri: /auth/*
+    priority: 110
     methods:
       - GET
       - POST
@@ -32,24 +38,21 @@ routes:
     plugins:
       proxy-rewrite:
         regex_uri:
-          - "^/api/(.*)$"
-          - "/api/$1"
+          - "^/auth/(.*)$"
+          - "/api/auth/$1"
       cors:
-        allow_origins: "http://localhost:5173"
+        allow_origins: "http://localhost:5173,http://127.0.0.1:5173,http://localhost:9080,http://127.0.0.1:9080"
         allow_methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-        allow_headers: "*"
-        expose_headers: "*"
+        allow_headers: "Authorization,Content-Type,Accept,Origin,X-Requested-With"
+        expose_headers: "Authorization,Content-Type"
         allow_credential: true
         max_age: 3600
-    upstream:
-      type: roundrobin
-      pass_host: pass
-      nodes:
-        "127.0.0.1:8000": 1
+    upstream_id: auth-service
 
-  - uri: /*
-    name: frontend-vite
-    priority: 1
+  - id: backend-api
+    name: backend-api
+    uri: /api/*
+    priority: 100
     methods:
       - GET
       - POST
@@ -59,15 +62,50 @@ routes:
       - OPTIONS
       - HEAD
     plugins:
-      proxy-rewrite:
-        uri: /
-    upstream:
-      type: roundrobin
-      pass_host: pass
-      nodes:
-        "127.0.0.1:5173": 1
-      timeout:
-        connect: 6
-        send: 6
-        read: 6
-    websocket: true
+      cors:
+        allow_origins: "http://localhost:5173,http://127.0.0.1:5173,http://localhost:9080,http://127.0.0.1:9080"
+        allow_methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+        allow_headers: "Authorization,Content-Type,Accept,Origin,X-Requested-With"
+        expose_headers: "Authorization,Content-Type"
+        allow_credential: true
+        max_age: 3600
+    upstream_id: auth-service
+
+  - id: frontend-app
+    name: frontend-app
+    uri: /*
+    priority: 1
+    methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+      - HEAD
+    upstream_id: frontend-app
+
+upstreams:
+  - id: auth-service
+    name: auth-service
+    type: roundrobin
+    pass_host: pass
+    nodes:
+      "auth_service:8000": 1
+    timeout:
+      connect: 6
+      send: 6
+      read: 6
+
+  - id: frontend-app
+    name: frontend-app
+    type: roundrobin
+    pass_host: pass
+    nodes:
+      "frontend:5173": 1
+    timeout:
+      connect: 6
+      send: 6
+      read: 6
+
+#END

@@ -9,11 +9,11 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/auth':         { target: 'http://localhost:8080', changeOrigin: true },
-      '/listings':     { target: 'http://localhost:8080', changeOrigin: true },
-      '/reservations': { target: 'http://localhost:8080', changeOrigin: true },
-      '/payments':     { target: 'http://localhost:8080', changeOrigin: true },
-      '/admin':        { target: 'http://localhost:8080', changeOrigin: true },
+      '/auth':         { target: 'http://localhost:9080', changeOrigin: true },
+      '/listings':     { target: 'http://localhost:9080', changeOrigin: true },
+      '/reservations': { target: 'http://localhost:9080', changeOrigin: true },
+      '/payments':     { target: 'http://localhost:9080', changeOrigin: true },
+      '/admin':        { target: 'http://localhost:9080', changeOrigin: true },
     },
   },
 });

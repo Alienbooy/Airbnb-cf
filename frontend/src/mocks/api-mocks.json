@@ -1,7 +1,8 @@
 {
   "meta": {
     "app": "StayBnb",
-    "apiGatewayBasePath": "http://localhost:8080",
+    "apiGatewayBasePath": "http://localhost:9080",
+    "currency": "USD",
     "roles": ["guest", "host", "admin"],
     "listingStatuses": ["active", "inactive", "pending", "rejected"],
     "reservationStatuses": ["pending", "confirmed", "checked_in", "completed", "cancelled"],
@@ -13,13 +14,15 @@
       "password": "Password123!"
     },
     "loginResponse": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock.token",
+      "token": "mock.jwt.guest.token",
       "user": {
         "id": "usr_1001",
         "firstName": "Ana",
         "lastName": "Garcia",
+        "name": "Ana Garcia",
         "email": "ana.garcia@example.com",
         "role": "guest",
+        "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=240&q=80",
         "phone": "+54 11 5555 1001",
         "status": "active",
         "createdAt": "2026-05-10T14:20:00.000Z"
@@ -33,24 +36,14 @@
       "confirmPassword": "Password123!",
       "role": "guest"
     },
-    "registerResponse": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6Im1vY2sucmVnaXN0ZXI",
-      "user": {
-        "id": "usr_1001",
-        "firstName": "Ana",
-        "lastName": "Garcia",
-        "email": "ana.garcia@example.com",
-        "role": "guest",
-        "status": "active",
-        "createdAt": "2026-05-10T14:20:00.000Z"
-      }
-    },
     "profileResponse": {
       "id": "usr_1001",
       "firstName": "Ana",
       "lastName": "Garcia",
+      "name": "Ana Garcia",
       "email": "ana.garcia@example.com",
       "role": "guest",
+      "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=240&q=80",
       "phone": "+54 11 5555 1001",
       "status": "active",
       "preferences": {
@@ -61,135 +54,286 @@
       "createdAt": "2026-05-10T14:20:00.000Z"
     }
   },
+  "users": [
+    {
+      "id": "usr_1001",
+      "firstName": "Ana",
+      "lastName": "Garcia",
+      "name": "Ana Garcia",
+      "email": "ana.garcia@example.com",
+      "password": "Password123!",
+      "role": "guest",
+      "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=240&q=80",
+      "phone": "+54 11 5555 1001",
+      "status": "active",
+      "createdAt": "2026-05-10T14:20:00.000Z"
+    },
+    {
+      "id": "usr_1002",
+      "firstName": "Lucia",
+      "lastName": "Mendez",
+      "name": "Lucia Mendez",
+      "email": "lucia.host@example.com",
+      "password": "Password123!",
+      "role": "host",
+      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=240&q=80",
+      "phone": "+34 600 410 221",
+      "status": "active",
+      "createdAt": "2026-04-18T11:30:00.000Z"
+    },
+    {
+      "id": "usr_1003",
+      "firstName": "Marco",
+      "lastName": "Perez",
+      "name": "Marco Perez",
+      "email": "admin@example.com",
+      "password": "Password123!",
+      "role": "admin",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=80",
+      "phone": "+1 305 555 0172",
+      "status": "active",
+      "createdAt": "2026-03-02T09:00:00.000Z"
+    }
+  ],
   "listings": {
     "summaryResponse": [
       {
         "id": "lst_2001",
         "slug": "loft-moderno-en-palermo",
         "title": "Loft moderno en Palermo",
-        "subtitle": "Luz natural, balcón y cowork friendly",
+        "subtitle": "Luz natural, balcon y cowork friendly",
+        "description": "Un loft amplio y luminoso para estadias cortas o largas, con cocina equipada y balcon privado.",
         "city": "Buenos Aires",
         "country": "Argentina",
+        "address": "Honduras 4800, Palermo",
         "pricePerNight": 85,
         "currency": "USD",
         "rating": 4.92,
         "reviewCount": 148,
-        "coverImage": "https://cf.bstatic.com/xdata/images/hotel/max500/502711306.jpg?k=abea2f27d6fabe74c3b880fa8c85677a6408ac8bc2e332de08b1b0e56ba67fae&o=",
-        "amenities": ["wifi", "airConditioning", "kitchen", "washer"],
+        "coverImage": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80",
+        "images": [
+          "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "amenities": ["wifi", "airConditioning", "kitchen", "washer", "workspace", "balcony"],
         "guests": 2,
         "bedrooms": 1,
         "beds": 1,
         "baths": 1,
+        "status": "active",
+        "hostId": "usr_1002",
         "host": {
-          "id": "hst_3001",
+          "id": "usr_1002",
           "firstName": "Lucia",
           "lastName": "Mendez",
+          "name": "Lucia Mendez",
+          "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=240&q=80",
           "superhost": true,
-          "responseRate": 98
+          "responseRate": 98,
+          "responseTime": "menos de 1 hora"
         }
       },
       {
         "id": "lst_2002",
-        "slug": "casa-frente-al-mar-en-marbella",
-        "title": "Casa frente al mar en Marbella",
-        "subtitle": "Terraza privada y vista panoramica",
+        "slug": "villa-frente-al-mar-marbella",
+        "title": "Villa frente al mar en Marbella",
+        "subtitle": "Terraza privada, piscina y vista panoramica",
+        "description": "Casa luminosa a pasos de la playa, ideal para familias y grupos que buscan privacidad.",
         "city": "Marbella",
-        "country": "Spain",
+        "country": "Espana",
+        "address": "Calle del Mar 18, Marbella",
         "pricePerNight": 220,
         "currency": "USD",
         "rating": 4.87,
         "reviewCount": 92,
-        "coverImage": "https://cf.bstatic.com/xdata/images/hotel/max1024x768/502711137.jpg?k=3dc279c41fd7c3812746b3ff2a67a53a7be097f040db3995d401999aeeb6b157&o=",
-        "amenities": ["pool", "wifi", "parking", "breakfast"],
+        "coverImage": "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=1200&q=80",
+        "images": [
+          "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "amenities": ["pool", "wifi", "parking", "breakfast", "seaView"],
         "guests": 6,
         "bedrooms": 3,
         "beds": 4,
         "baths": 2,
+        "status": "active",
+        "hostId": "usr_1002",
         "host": {
-          "id": "hst_3002",
-          "firstName": "Carlos",
-          "lastName": "Ramos",
-          "superhost": false,
-          "responseRate": 94
+          "id": "usr_1002",
+          "firstName": "Lucia",
+          "lastName": "Mendez",
+          "name": "Lucia Mendez",
+          "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=240&q=80",
+          "superhost": true,
+          "responseRate": 98,
+          "responseTime": "menos de 1 hora"
         }
       },
       {
         "id": "lst_2003",
-        "slug": "cabana-en-la-montana-bariloche",
-        "title": "Cabaña en la montana de Bariloche",
+        "slug": "cabana-en-bariloche",
+        "title": "Cabana en la montana de Bariloche",
         "subtitle": "Chimenea, bosque y silencio total",
+        "description": "Refugio calido entre arboles con senderos cercanos, parrilla y vista al lago.",
         "city": "Bariloche",
         "country": "Argentina",
+        "address": "Ruta 82 km 6, Bariloche",
         "pricePerNight": 130,
         "currency": "USD",
         "rating": 4.96,
         "reviewCount": 61,
-        "coverImage": "https://cf.bstatic.com/xdata/images/hotel/max500/502711306.jpg?k=abea2f27d6fabe74c3b880fa8c85677a6408ac8bc2e332de08b1b0e56ba67fae&o=",
-        "amenities": ["fireplace", "wifi", "parking", "lakeView"],
+        "coverImage": "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?auto=format&fit=crop&w=1200&q=80",
+        "images": [
+          "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "amenities": ["fireplace", "wifi", "parking", "lakeView", "grill"],
         "guests": 4,
         "bedrooms": 2,
         "beds": 3,
         "baths": 1,
+        "status": "active",
+        "hostId": "usr_1002",
         "host": {
-          "id": "hst_3003",
-          "firstName": "Sofia",
-          "lastName": "Lopez",
+          "id": "usr_1002",
+          "firstName": "Lucia",
+          "lastName": "Mendez",
+          "name": "Lucia Mendez",
+          "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=240&q=80",
           "superhost": true,
-          "responseRate": 99
+          "responseRate": 98,
+          "responseTime": "menos de 1 hora"
+        }
+      },
+      {
+        "id": "lst_2004",
+        "slug": "departamento-en-miraflores",
+        "title": "Departamento boutique en Miraflores",
+        "subtitle": "A pasos del malecon y restaurantes",
+        "description": "Departamento urbano con balcon, seguridad 24 hs y cocina completa.",
+        "city": "Lima",
+        "country": "Peru",
+        "address": "Av. Larco 1220, Miraflores",
+        "pricePerNight": 74,
+        "currency": "USD",
+        "rating": 4.78,
+        "reviewCount": 84,
+        "coverImage": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+        "images": [
+          "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "amenities": ["wifi", "kitchen", "security", "washer", "balcony"],
+        "guests": 3,
+        "bedrooms": 1,
+        "beds": 2,
+        "baths": 1,
+        "status": "active",
+        "hostId": "usr_1002",
+        "host": {
+          "id": "usr_1002",
+          "firstName": "Lucia",
+          "lastName": "Mendez",
+          "name": "Lucia Mendez",
+          "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=240&q=80",
+          "superhost": true,
+          "responseRate": 98,
+          "responseTime": "menos de 1 hora"
+        }
+      },
+      {
+        "id": "lst_2005",
+        "slug": "casa-colonial-cartagena",
+        "title": "Casa colonial en Cartagena",
+        "subtitle": "Patio interior, pileta y murallas historicas",
+        "description": "Casa restaurada dentro de la ciudad amurallada con habitaciones amplias y terraza.",
+        "city": "Cartagena",
+        "country": "Colombia",
+        "address": "Centro Historico 42, Cartagena",
+        "pricePerNight": 165,
+        "currency": "USD",
+        "rating": 4.9,
+        "reviewCount": 118,
+        "coverImage": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
+        "images": [
+          "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "amenities": ["pool", "wifi", "airConditioning", "patio", "kitchen"],
+        "guests": 5,
+        "bedrooms": 2,
+        "beds": 3,
+        "baths": 2,
+        "status": "active",
+        "hostId": "usr_1002",
+        "host": {
+          "id": "usr_1002",
+          "firstName": "Lucia",
+          "lastName": "Mendez",
+          "name": "Lucia Mendez",
+          "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=240&q=80",
+          "superhost": true,
+          "responseRate": 98,
+          "responseTime": "menos de 1 hora"
+        }
+      },
+      {
+        "id": "lst_2006",
+        "slug": "studio-en-santiago",
+        "title": "Studio minimalista en Santiago",
+        "subtitle": "Metro cerca, terraza y gimnasio",
+        "description": "Studio compacto y bien equipado para viajes de trabajo o escapadas urbanas.",
+        "city": "Santiago",
+        "country": "Chile",
+        "address": "Providencia 1900, Santiago",
+        "pricePerNight": 68,
+        "currency": "USD",
+        "rating": 4.74,
+        "reviewCount": 56,
+        "coverImage": "https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=1200&q=80",
+        "images": [
+          "https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1560448075-bb485b067938?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1560448205-17d3a46c84de?auto=format&fit=crop&w=1200&q=80"
+        ],
+        "amenities": ["wifi", "gym", "kitchen", "workspace", "terrace"],
+        "guests": 2,
+        "bedrooms": 1,
+        "beds": 1,
+        "baths": 1,
+        "status": "active",
+        "hostId": "usr_1002",
+        "host": {
+          "id": "usr_1002",
+          "firstName": "Lucia",
+          "lastName": "Mendez",
+          "name": "Lucia Mendez",
+          "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=240&q=80",
+          "superhost": true,
+          "responseRate": 98,
+          "responseTime": "menos de 1 hora"
         }
       }
     ],
     "detailResponse": {
       "id": "lst_2001",
-      "slug": "loft-moderno-en-palermo",
-      "title": "Loft moderno en Palermo",
-      "subtitle": "Luz natural, balcón y cowork friendly",
-      "description": "Un loft amplio y luminoso ideal para estadias cortas o largas. Tiene un balcon privado, espacio para trabajar y acceso rapido a cafes, transporte y parques.",
-      "city": "Buenos Aires",
-      "country": "Argentina",
-      "address": "Honduras 4800, Palermo",
-      "coordinates": {
-        "lat": -34.5895,
-        "lng": -58.4321
-      },
-      "pricePerNight": 85,
-      "currency": "USD",
-      "rating": 4.92,
-      "reviewCount": 148,
-      "guests": 2,
-      "bedrooms": 1,
-      "beds": 1,
-      "baths": 1,
       "checkInTime": "15:00",
       "checkOutTime": "11:00",
-      "houseRules": ["No smoking", "No pets", "No parties"],
-      "amenities": ["wifi", "airConditioning", "kitchen", "washer", "workspace", "balcony"],
-      "images": [
-        "https://images.example.com/listings/palermo-1.jpg",
-        "https://images.example.com/listings/palermo-2.jpg",
-        "https://images.example.com/listings/palermo-3.jpg"
-      ],
-      "host": {
-        "id": "hst_3001",
-        "firstName": "Lucia",
-        "lastName": "Mendez",
-        "bio": "Host dedicada a espacios modernos y bien ubicados.",
-        "superhost": true,
-        "responseRate": 98,
-        "responseTime": "within an hour"
-      },
+      "houseRules": ["No fumar", "No fiestas", "Mascotas bajo consulta"],
       "availability": {
         "minNights": 2,
         "maxNights": 21,
         "blockedDates": ["2026-06-05", "2026-06-06", "2026-06-12"]
-      },
-      "status": "active",
-      "createdAt": "2026-01-15T10:10:00.000Z",
-      "updatedAt": "2026-05-20T18:45:00.000Z"
+      }
     },
     "createRequest": {
       "title": "Loft moderno en Palermo",
-      "subtitle": "Luz natural, balcón y cowork friendly",
+      "subtitle": "Luz natural, balcon y cowork friendly",
       "description": "Un loft amplio y luminoso ideal para estadias cortas o largas.",
       "city": "Buenos Aires",
       "country": "Argentina",
@@ -201,12 +345,7 @@
       "beds": 1,
       "baths": 1,
       "amenities": ["wifi", "kitchen", "balcony"],
-      "images": ["https://images.example.com/listings/palermo-1.jpg"]
-    },
-    "createResponse": {
-      "id": "lst_2004",
-      "status": "pending",
-      "createdAt": "2026-05-24T12:00:00.000Z"
+      "images": ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80"]
     }
   },
   "reservations": {
@@ -218,13 +357,16 @@
         "guestName": "Ana Garcia",
         "listingTitle": "Loft moderno en Palermo",
         "city": "Buenos Aires",
+        "coverImage": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80",
         "checkIn": "2026-06-20",
         "checkOut": "2026-06-23",
         "guests": 2,
         "nights": 3,
         "subtotal": 255,
         "serviceFee": 25,
-        "total": 280,
+        "cleaningFee": 15,
+        "taxes": 18,
+        "total": 313,
         "currency": "USD",
         "status": "confirmed",
         "paymentStatus": "paid",
@@ -235,69 +377,46 @@
         "listingId": "lst_2003",
         "guestId": "usr_1001",
         "guestName": "Ana Garcia",
-        "listingTitle": "Cabaña en la montana de Bariloche",
+        "listingTitle": "Cabana en la montana de Bariloche",
         "city": "Bariloche",
+        "coverImage": "https://images.unsplash.com/photo-1518732714860-b62714ce0c59?auto=format&fit=crop&w=900&q=80",
         "checkIn": "2026-07-01",
         "checkOut": "2026-07-05",
         "guests": 4,
         "nights": 4,
         "subtotal": 520,
         "serviceFee": 40,
-        "total": 560,
+        "cleaningFee": 25,
+        "taxes": 32,
+        "total": 617,
         "currency": "USD",
         "status": "pending",
         "paymentStatus": "pending",
         "createdAt": "2026-05-18T13:25:00.000Z"
+      },
+      {
+        "id": "res_4003",
+        "listingId": "lst_2002",
+        "guestId": "usr_1001",
+        "guestName": "Ana Garcia",
+        "listingTitle": "Villa frente al mar en Marbella",
+        "city": "Marbella",
+        "coverImage": "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=900&q=80",
+        "checkIn": "2026-08-14",
+        "checkOut": "2026-08-19",
+        "guests": 5,
+        "nights": 5,
+        "subtotal": 1100,
+        "serviceFee": 88,
+        "cleaningFee": 55,
+        "taxes": 70,
+        "total": 1313,
+        "currency": "USD",
+        "status": "confirmed",
+        "paymentStatus": "paid",
+        "createdAt": "2026-05-22T17:05:00.000Z"
       }
-    ],
-    "detailResponse": {
-      "id": "res_4001",
-      "listingId": "lst_2001",
-      "guestId": "usr_1001",
-      "hostId": "hst_3001",
-      "listingTitle": "Loft moderno en Palermo",
-      "checkIn": "2026-06-20",
-      "checkOut": "2026-06-23",
-      "guests": 2,
-      "nights": 3,
-      "pricePerNight": 85,
-      "subtotal": 255,
-      "serviceFee": 25,
-      "cleaningFee": 15,
-      "taxes": 18,
-      "total": 313,
-      "currency": "USD",
-      "status": "confirmed",
-      "paymentStatus": "paid",
-      "paymentMethod": "card",
-      "specialRequests": "Late check-in around 9pm.",
-      "guestSnapshot": {
-        "firstName": "Ana",
-        "lastName": "Garcia",
-        "email": "ana.garcia@example.com",
-        "phone": "+54 11 5555 1001"
-      },
-      "listingSnapshot": {
-        "title": "Loft moderno en Palermo",
-        "city": "Buenos Aires",
-        "coverImage": "https://images.example.com/listings/palermo-1.jpg"
-      },
-      "createdAt": "2026-05-12T09:10:00.000Z",
-      "updatedAt": "2026-05-12T09:12:00.000Z"
-    },
-    "createRequest": {
-      "listingId": "lst_2001",
-      "checkIn": "2026-06-20",
-      "checkOut": "2026-06-23",
-      "guests": 2,
-      "specialRequests": "Late check-in around 9pm."
-    },
-    "createResponse": {
-      "id": "res_4003",
-      "status": "pending",
-      "paymentStatus": "pending",
-      "createdAt": "2026-05-24T12:10:00.000Z"
-    }
+    ]
   },
   "payments": {
     "summaryResponse": [
@@ -314,39 +433,94 @@
       {
         "id": "pay_5002",
         "reservationId": "res_4002",
-        "amount": 560,
+        "amount": 617,
         "currency": "USD",
         "method": "card",
         "status": "pending",
         "transactionRef": null,
         "paidAt": null
+      },
+      {
+        "id": "pay_5003",
+        "reservationId": "res_4003",
+        "amount": 1313,
+        "currency": "USD",
+        "method": "card",
+        "status": "paid",
+        "transactionRef": "txn_1ab23c",
+        "paidAt": "2026-05-22T17:10:00.000Z"
       }
-    ],
-    "detailResponse": {
-      "id": "pay_5001",
-      "reservationId": "res_4001",
-      "amount": 313,
-      "currency": "USD",
-      "method": "card",
-      "status": "paid",
-      "provider": "stripe",
-      "transactionRef": "txn_9f12a2",
-      "fee": 9,
-      "refundAmount": 0,
-      "receiptUrl": "https://payments.example.com/receipts/pay_5001",
-      "paidAt": "2026-05-12T09:13:00.000Z"
+    ]
+  },
+  "reviews": [
+    {
+      "id": "rev_6001",
+      "listingId": "lst_2001",
+      "guestName": "Camila Torres",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80",
+      "rating": 5,
+      "comment": "Excelente ubicacion, muy limpio y perfecto para trabajar remoto.",
+      "createdAt": "2026-05-02"
     },
-    "createRequest": {
-      "reservationId": "res_4003",
-      "method": "card",
-      "amount": 280,
-      "currency": "USD"
+    {
+      "id": "rev_6002",
+      "listingId": "lst_2001",
+      "guestName": "Nicolas Ruiz",
+      "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=160&q=80",
+      "rating": 4.8,
+      "comment": "El balcon y la luz natural hacen que el lugar se sienta muy comodo.",
+      "createdAt": "2026-04-20"
     },
-    "createResponse": {
-      "id": "pay_5003",
-      "status": "paid",
-      "transactionRef": "txn_1ab23c",
-      "receiptUrl": "https://payments.example.com/receipts/pay_5003"
+    {
+      "id": "rev_6003",
+      "listingId": "lst_2003",
+      "guestName": "Valentina Costa",
+      "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=160&q=80",
+      "rating": 5,
+      "comment": "Una cabana preciosa para desconectar. La chimenea fue lo mejor.",
+      "createdAt": "2026-03-28"
+    }
+  ],
+  "savedListings": ["lst_2001", "lst_2003", "lst_2005"],
+  "messages": [
+    {
+      "id": "msg_9001",
+      "from": "Lucia Mendez",
+      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=120&q=80",
+      "subject": "Check-in en Palermo",
+      "preview": "Te dejo las instrucciones para entrar al edificio y retirar las llaves.",
+      "createdAt": "2026-06-18T18:00:00.000Z",
+      "unread": true
+    },
+    {
+      "id": "msg_9002",
+      "from": "Soporte StayBnb",
+      "avatar": "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?auto=format&fit=crop&w=120&q=80",
+      "subject": "Pago confirmado",
+      "preview": "Tu reserva en Marbella ya esta confirmada.",
+      "createdAt": "2026-05-22T17:13:00.000Z",
+      "unread": false
+    }
+  ],
+  "notifications": [
+    { "id": "not_1", "type": "booking", "message": "Tu reserva en Palermo empieza en 23 dias.", "createdAt": "2026-05-28T10:00:00.000Z" },
+    { "id": "not_2", "type": "payment", "message": "Pago pendiente para Bariloche.", "createdAt": "2026-05-27T15:30:00.000Z" },
+    { "id": "not_3", "type": "promo", "message": "Nuevos alojamientos con descuento en Lima.", "createdAt": "2026-05-26T09:20:00.000Z" }
+  ],
+  "host": {
+    "dashboardResponse": {
+      "kpis": {
+        "activeListings": 6,
+        "monthlyBookings": 18,
+        "occupancyRate": 78,
+        "monthlyRevenue": 12480,
+        "averageRating": 4.88
+      },
+      "calendar": [
+        { "date": "2026-06-20", "listing": "Loft moderno en Palermo", "status": "booked" },
+        { "date": "2026-07-01", "listing": "Cabana en la montana de Bariloche", "status": "pending" },
+        { "date": "2026-08-14", "listing": "Villa frente al mar en Marbella", "status": "booked" }
+      ]
     }
   },
   "admin": {
@@ -360,88 +534,25 @@
         "conversionRate": 3.8
       },
       "revenueSeries": [
-        { "month": "Jan", "value": 54000 },
+        { "month": "Ene", "value": 54000 },
         { "month": "Feb", "value": 61000 },
         { "month": "Mar", "value": 70000 },
-        { "month": "Apr", "value": 76000 },
+        { "month": "Abr", "value": 76000 },
         { "month": "May", "value": 81000 }
       ],
       "recentUsers": [
-        {
-          "id": "usr_1001",
-          "name": "Ana Garcia",
-          "role": "guest",
-          "status": "active",
-          "createdAt": "2026-05-10T14:20:00.000Z"
-        },
-        {
-          "id": "usr_1002",
-          "name": "Lucia Mendez",
-          "role": "host",
-          "status": "active",
-          "createdAt": "2026-05-08T16:00:00.000Z"
-        }
+        { "id": "usr_1001", "name": "Ana Garcia", "role": "guest", "status": "active", "createdAt": "2026-05-10T14:20:00.000Z" },
+        { "id": "usr_1002", "name": "Lucia Mendez", "role": "host", "status": "active", "createdAt": "2026-04-18T11:30:00.000Z" },
+        { "id": "usr_1003", "name": "Marco Perez", "role": "admin", "status": "active", "createdAt": "2026-03-02T09:00:00.000Z" }
       ],
       "recentModerationEvents": [
-        {
-          "id": "mod_7001",
-          "type": "listing_review",
-          "message": "New listing pending verification",
-          "severity": "medium",
-          "createdAt": "2026-05-24T10:00:00.000Z"
-        },
-        {
-          "id": "mod_7002",
-          "type": "refund_review",
-          "message": "Refund request approved",
-          "severity": "low",
-          "createdAt": "2026-05-23T19:40:00.000Z"
-        }
+        { "id": "mod_7001", "type": "listing_review", "message": "Nuevo alojamiento pendiente de verificacion", "severity": "medium", "createdAt": "2026-05-24T10:00:00.000Z" },
+        { "id": "mod_7002", "type": "refund_review", "message": "Solicitud de reembolso aprobada", "severity": "low", "createdAt": "2026-05-23T19:40:00.000Z" }
       ]
     },
-    "usersResponse": [
-      {
-        "id": "usr_1001",
-        "firstName": "Ana",
-        "lastName": "Garcia",
-        "email": "ana.garcia@example.com",
-        "role": "guest",
-        "status": "active"
-      },
-      {
-        "id": "usr_1002",
-        "firstName": "Lucia",
-        "lastName": "Mendez",
-        "email": "lucia@example.com",
-        "role": "host",
-        "status": "active"
-      },
-      {
-        "id": "usr_1003",
-        "firstName": "Marco",
-        "lastName": "Perez",
-        "email": "marco@example.com",
-        "role": "admin",
-        "status": "suspended"
-      }
-    ],
     "reportsResponse": [
-      {
-        "id": "rep_8001",
-        "type": "property_quality",
-        "title": "Property photo mismatch",
-        "status": "open",
-        "priority": "high",
-        "createdAt": "2026-05-22T08:30:00.000Z"
-      },
-      {
-        "id": "rep_8002",
-        "type": "guest_support",
-        "title": "Payment dispute resolved",
-        "status": "closed",
-        "priority": "low",
-        "createdAt": "2026-05-21T11:10:00.000Z"
-      }
+      { "id": "rep_8001", "type": "property_quality", "title": "Fotos de propiedad requieren revision", "status": "open", "priority": "high", "createdAt": "2026-05-22T08:30:00.000Z" },
+      { "id": "rep_8002", "type": "guest_support", "title": "Disputa de pago resuelta", "status": "closed", "priority": "low", "createdAt": "2026-05-21T11:10:00.000Z" }
     ]
   }
 }

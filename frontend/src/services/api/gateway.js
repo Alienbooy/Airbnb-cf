@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8080';
+const GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:9080';
 
 const gateway = axios.create({
   baseURL: GATEWAY_URL,

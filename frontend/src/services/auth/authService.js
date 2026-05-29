@@ -1,29 +1,74 @@
 import gateway from '../api/gateway';
+import mockData from '../../mocks/api-mocks.json';
 
-const AUTH_PREFIX = '/auth';
+function toAppRole(roles = []) {
+  if (roles.includes('admin')) return 'admin';
+  if (roles.includes('host')) return 'host';
+  return 'guest';
+}
+
+function normalizeBackendUser(user) {
+  return {
+    id: String(user.id),
+    username: user.username,
+    firstName: user.username,
+    lastName: '',
+    name: user.username,
+    email: user.email,
+    role: toAppRole(user.roles),
+    roles: user.roles || ['client'],
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=240&q=80',
+    phone: '',
+    status: 'active',
+    createdAt: user.created_at,
+  };
+}
+
+function delay(data) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(data), 250);
+  });
+}
 
 export const authService = {
   async register(data) {
-    const res = await gateway.post(`${AUTH_PREFIX}/register`, data);
-    return res.data;
+    await gateway.post('/auth/register', {
+      username: data.username.trim(),
+      email: data.email.trim(),
+      password: data.password,
+    });
+
+    return this.login({
+      username: data.username,
+      password: data.password,
+    });
   },
 
   async login(credentials) {
-    const res = await gateway.post(`${AUTH_PREFIX}/login`, credentials);
-    const { token, user } = res.data;
-    localStorage.setItem('token', token);
+    const loginResponse = await gateway.post('/auth/login', {
+      username: credentials.username.trim(),
+      password: credentials.password,
+    });
+
+    const { access, refresh } = loginResponse.data;
+    localStorage.setItem('token', access);
+    localStorage.setItem('refreshToken', refresh);
+
+    const profileResponse = await gateway.get('/auth/profile');
+    const user = normalizeBackendUser(profileResponse.data);
     localStorage.setItem('user', JSON.stringify(user));
-    return res.data;
+
+    return { token: access, refreshToken: refresh, user };
   },
 
   async logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
   },
 
   async getProfile() {
-    const res = await gateway.get(`${AUTH_PREFIX}/profile`);
-    return res.data;
+    return delay(this.getUser() || mockData.auth.profileResponse);
   },
 
   getUser() {
