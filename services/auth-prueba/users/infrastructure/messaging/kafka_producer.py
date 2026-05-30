@@ -14,11 +14,16 @@ def _producer() -> KafkaProducer:
     if _producer_instance is not None:
         return _producer_instance
 
-    _producer_instance = KafkaProducer(
-        bootstrap_servers=os.environ.get("KAFKA_BROKER", "kafka:9092"),
-        value_serializer=lambda v: json.dumps(v).encode("utf-8"),
-        acks=1,
-    )
+    try:
+        _producer_instance = KafkaProducer(
+            bootstrap_servers=os.environ.get("KAFKA_BROKER", "kafka:9092"),
+            value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+            acks=1,
+        )
+    except Exception as e:
+        print(f"Error connecting to Kafka: {e}")
+        return None
+
     return _producer_instance
 
 

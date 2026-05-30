@@ -65,7 +65,7 @@ services:
       - --smp
       - "1"
       - --memory
-      - 1G
+      - 256M
       - --reserve-memory
       - 0M
       - --node-id
@@ -77,6 +77,24 @@ services:
       - PLAINTEXT://kafka:9092
     ports:
       - "9092:9092"
+
+  auth_worker:
+    build:
+      context: ./services/auth-prueba
+    container_name: auth_worker
+    restart: always
+    env_file:
+      - ./services/auth-prueba/.env
+    environment:
+      DB_HOST: auth_db
+      DB_PORT: 5432
+      KAFKA_BROKER: kafka:9092
+    volumes:
+      - ./services/auth-prueba:/app
+    command: ["python", "manage.py", "publish_events"]
+    depends_on:
+      - auth_db
+      - kafka
 
 
 volumes:

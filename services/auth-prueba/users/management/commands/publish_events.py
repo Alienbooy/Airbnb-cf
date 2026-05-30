@@ -18,34 +18,40 @@ class Command(BaseCommand):
         batch_size = options["batch_size"]
         include_failed = options["include_failed"]
 
-        statuses = [UserEvent.Status.PENDING]
-        if include_failed:
-            statuses.append(UserEvent.Status.FAILED)
+        self.stdout.write(self.style.SUCCESS("Starting background event publisher..."))
 
-        events = (
-            UserEvent.objects.filter(status__in=statuses)
-            .order_by("id")
-            .only("id", "event_type", "aggregate_id", "payload", "occurred_at", "status")[:batch_size]
-        )
+        while True:
+            statuses = [UserEvent.Status.PENDING]
+            if include_failed:
+                statuses.append(UserEvent.Status.FAILED)
 
-        if not events:
-            self.stdout.write(self.style.SUCCESS("No pending events."))
-            return
+            events = (
+                UserEvent.objects.filter(status__in=statuses)
+                .order_by("id")
+                .only("id", "event_type", "aggregate_id", "payload", "occurred_at", "status")[:batch_size]
+            )
 
-        published = 0
-        failed = 0
-        for event in events:
-            ok = send_user_event(event)
-            if ok:
-                event.status = UserEvent.Status.SENT
-                event.sent_at = timezone.now()
-                event.error = ""
-                event.save(update_fields=["status", "sent_at", "error"])
-                published += 1
-            else:
-                event.status = UserEvent.Status.FAILED
-                event.error = "publish_failed"
-                event.save(update_fields=["status", "error"])
-                failed += 1
+            if not events:
+                import time
+                time.sleep(5)
+                continue
 
-        self.stdout.write(self.style.SUCCESS(f"Published: {published}, Failed: {failed}"))
+            published = 0
+            failed = 0
+            for event in events:
+                ok = send_user_event(event)
+                if ok:
+                    event.status = UserEvent.Status.SENT
+                    event.sent_at = timezone.now()
+                    event.error = ""
+                    event.save(update_fields=["status", "sent_at", "error"])
+                    published += 1
+                else:
+                    event.status = UserEvent.Status.FAILED
+                    event.error = "publish_failed"
+                    event.save(update_fields=["status", "error"])
+                    failed += 1
+
+            self.stdout.write(self.style.SUCCESS(f"Published: {published}, Failed: {failed}"))
+            import time
+            time.sleep(1)
