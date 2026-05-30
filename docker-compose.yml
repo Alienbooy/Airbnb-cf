@@ -65,7 +65,7 @@ services:
       - --smp
       - "1"
       - --memory
-      - 256M
+      - 1G
       - --reserve-memory
       - 0M
       - --node-id
