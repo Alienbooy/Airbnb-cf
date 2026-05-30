@@ -69,14 +69,14 @@ services/auth-prueba/.env
 Si necesitás personalizarlo, estos son los valores por defecto:
 
 ```env
-DJANGO_SECRET_KEY=contraseñasecreta01020304050607
+DJANGO_SECRET_KEY=contraseñasecreta
 DJANGO_DEBUG=1
 DJANGO_ALLOWED_HOSTS=*
 
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
-DB_PASSWORD=postgres
+DB_PASSWORD= contrasena
 DB_NAME_WRITE=airbnb_write
 DB_NAME_READ=airbnb_read
 
