@@ -72,15 +72,18 @@ export const authService = {
   },
 
   getUser() {
+    if (typeof window === 'undefined') return null;
     const u = localStorage.getItem('user');
     return u ? JSON.parse(u) : null;
   },
 
   getToken() {
+    if (typeof window === 'undefined') return null;
     return localStorage.getItem('token');
   },
 
   isAuthenticated() {
+    if (typeof window === 'undefined') return false;
     return !!localStorage.getItem('token');
   },
 };
