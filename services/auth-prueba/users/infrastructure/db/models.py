@@ -87,5 +87,4 @@ class UserView(models.Model):
     created_at = models.DateTimeField()
 
     class Meta:
-        managed = False
         db_table = "users_userview"

@@ -96,6 +96,24 @@ services:
       - auth_db
       - kafka
 
+  auth_consumer:
+    build:
+      context: ./services/auth-prueba
+    container_name: auth_consumer
+    restart: always
+    env_file:
+      - ./services/auth-prueba/.env
+    environment:
+      DB_HOST: auth_db
+      DB_PORT: 5432
+      KAFKA_BROKER: kafka:9092
+    volumes:
+      - ./services/auth-prueba:/app
+    command: ["python", "manage.py", "consume_events"]
+    depends_on:
+      - auth_db
+      - kafka
+
 
 volumes:
   auth_db_data:

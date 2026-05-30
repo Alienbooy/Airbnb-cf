@@ -39,7 +39,9 @@ for _ in range(30):
 raise SystemExit("Database not ready after timeout")
 PY
 
+python manage.py makemigrations users
 python manage.py migrate --noinput
+python manage.py migrate --database=read --noinput
 python manage.py create_admin
 
 exec "$@"

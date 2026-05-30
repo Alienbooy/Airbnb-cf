@@ -20,7 +20,7 @@ class AuthDbRouter:
 
     def allow_migrate(self, db: str, app_label: str, model_name: Optional[str] = None, **hints: object) -> Optional[bool]:
         if model_name == "userview":
-            return False
+            return db == "read"
         if db == "read":
             return False
-        return None
+        return db == "default"
