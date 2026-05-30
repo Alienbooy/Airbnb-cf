@@ -1,0 +1,7 @@
+# Normalizar los finales de línea para todos los sistemas operativos
+* text=auto
+
+# Asegurar que los scripts de shell y archivos de inicialización de Docker siempre usen LF (Linux)
+# Esto evita errores como "exec user process caused: no such file or directory" cuando se clona en Windows
+*.sh text eol=lf
+*.sql text eol=lf
