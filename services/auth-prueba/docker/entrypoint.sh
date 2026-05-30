@@ -19,7 +19,8 @@ for _ in range(30):
         conn.close()
         print("Database ready.")
         raise SystemExit(0)
-    except Exception:
+    except Exception as e:
+        print(f"Connection failed: {e}", flush=True)
         time.sleep(2)
 
 raise SystemExit("Database not ready after timeout")

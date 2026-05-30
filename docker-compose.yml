@@ -78,6 +78,7 @@ services:
     ports:
       - "9092:9092"
 
+
 volumes:
   auth_db_data:
   frontend_node_modules:
