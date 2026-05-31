@@ -29,6 +29,7 @@ services:
     build:
       context: ./services/auth-prueba
     container_name: auth_service
+    restart: always
     env_file:
       - ./services/auth-prueba/.env
     environment:
@@ -50,7 +51,7 @@ services:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
     ports:
-      - "5433:5432"
+      - "5440:5432"
     volumes:
       - auth_db_data:/var/lib/postgresql/data
       - ./services/auth-prueba/docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro

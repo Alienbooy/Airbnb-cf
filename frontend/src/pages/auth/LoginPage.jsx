@@ -6,7 +6,7 @@ import styles from './Auth.module.css';
 export default function LoginPage() {
   const { login, loading } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ username: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [showPass, setShowPass] = useState(false);
 
@@ -49,24 +49,25 @@ export default function LoginPage() {
         <div className={styles.card}>
           <div className={styles.cardHeader}>
             <h2>Bienvenido de vuelta</h2>
-            <p>Usa tu username y password para continuar.</p>
+            <p>Usa tu email y password para continuar.</p>
           </div>
 
           {error && <div className={styles.error}>{error}</div>}
 
           <form onSubmit={submit} className={styles.form} noValidate>
             <div className={styles.field}>
-              <label htmlFor="username">Username</label>
+              <label htmlFor="email">Email</label>
               <div className={styles.inputWrap}>
-                <svg className={styles.inputIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+                <svg className={styles.inputIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2 7 10 6.5L22 7"/></svg>
                 <input
-                  id="username"
-                  name="username"
-                  placeholder="admin"
-                  value={form.username}
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="tu@correo.com"
+                  value={form.email}
                   onChange={handle}
                   required
-                  autoComplete="username"
+                  autoComplete="email"
                 />
               </div>
             </div>

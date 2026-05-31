@@ -31,7 +31,8 @@ export default function RegisterPage() {
 
     try {
       await register(form);
-      navigate('/dashboard');
+      alert('¡Cuenta creada exitosamente! Por favor, inicia sesión para continuar.');
+      navigate('/login');
     } catch {
       setErrors({ general: 'No se pudo crear la cuenta.' });
     }

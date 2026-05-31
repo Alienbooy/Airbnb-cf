@@ -32,12 +32,12 @@ class RegisterSerializer(serializers.Serializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150)
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs: dict) -> dict:
         try:
-            user = authenticate_user(attrs["username"], attrs["password"])
+            user = authenticate_user(attrs["email"], attrs["password"])
         except ValueError:
             raise serializers.ValidationError({"detail": "invalid_credentials"})
         attrs["user"] = user

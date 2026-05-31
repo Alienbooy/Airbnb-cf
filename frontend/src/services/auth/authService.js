@@ -37,16 +37,13 @@ export const authService = {
       email: data.email.trim(),
       password: data.password,
     });
-
-    return this.login({
-      username: data.username,
-      password: data.password,
-    });
+    
+    return { success: true };
   },
 
   async login(credentials) {
     const loginResponse = await gateway.post('/auth/login', {
-      username: credentials.username.trim(),
+      email: credentials.email.trim(),
       password: credentials.password,
     });
 

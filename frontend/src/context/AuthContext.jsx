@@ -22,7 +22,6 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       const res = await authService.register(data);
-      setUser(res.user);
       return res;
     } finally {
       setLoading(false);
