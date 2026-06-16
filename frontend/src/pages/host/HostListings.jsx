@@ -1,45 +1,102 @@
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Eye, PauseCircle, Pencil, PlusCircle, Search } from 'lucide-react';
+import DashboardShell from '../../components/layout/DashboardShell';
+import Badge from '../../components/ui/Badge';
+import Button from '../../components/ui/Button';
+import { money, statusLabel } from '../../utils/formatters';
 import mockData from '../../mocks/api-mocks.json';
+import styles from './HostPages.module.css';
+
+function toneForStatus(status) {
+  if (status === 'active') return 'success';
+  if (status === 'pending') return 'warning';
+  if (status === 'rejected') return 'error';
+  return 'neutral';
+}
 
 export default function HostListings() {
+  const [query, setQuery] = useState('');
+  const [status, setStatus] = useState('');
+  const listings = mockData.listings.summaryResponse;
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return listings.filter((listing) => {
+      const matchesQuery = !q ||
+        listing.title.toLowerCase().includes(q) ||
+        listing.city.toLowerCase().includes(q) ||
+        listing.address.toLowerCase().includes(q);
+      const matchesStatus = !status || listing.status === status;
+      return matchesQuery && matchesStatus;
+    });
+  }, [query, status, listings]);
+
   return (
-    <main style={styles.page}>
-      <section style={styles.header}>
-        <div>
-          <span style={styles.eyebrow}>Inventario</span>
-          <h1 style={styles.title}>Publicaciones del anfitrion desde JSON.</h1>
-        </div>
-        <Link to="/host/listings/new" style={styles.button}>Crear alojamiento</Link>
+    <DashboardShell
+      role="host"
+      eyebrow="Inventario"
+      title="Gestion de anuncios"
+      subtitle="Revisa disponibilidad, estado, precio y acciones principales de tus propiedades."
+      actions={(
+        <Button as={Link} to="/host/listings/new">
+          <PlusCircle size={18} /> Crear alojamiento
+        </Button>
+      )}
+    >
+      <section className={styles.filters}>
+        <label>
+          <span className="srOnly">Buscar anuncio</span>
+          <div className={styles.searchWrap}>
+            <Search size={17} className={styles.searchIcon} />
+            <input
+              className={`${styles.searchInput} ${styles.searchInputWithIcon}`}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Buscar por titulo, ciudad o direccion"
+            />
+          </div>
+        </label>
+        <select className={styles.select} value={status} onChange={(event) => setStatus(event.target.value)}>
+          <option value="">Todos los estados</option>
+          {mockData.meta.listingStatuses.map((item) => (
+            <option key={item} value={item}>{statusLabel(item)}</option>
+          ))}
+        </select>
+        <Button type="button" variant="secondary" onClick={() => { setQuery(''); setStatus(''); }}>
+          Limpiar
+        </Button>
       </section>
 
-      <section style={styles.table}>
-        {mockData.listings.summaryResponse.map((listing) => (
-          <article key={listing.id} style={styles.row}>
-            <img src={listing.coverImage} alt={listing.title} style={styles.image} />
-            <div>
-              <strong>{listing.title}</strong>
-              <p style={styles.muted}>{listing.address}</p>
+      <section className={styles.table}>
+        <div className={styles.tableHead}>
+          <span>Alojamiento</span>
+          <span>Estado</span>
+          <span>Rating</span>
+          <span>Precio</span>
+          <span>Acciones</span>
+        </div>
+
+        {filtered.map((listing) => (
+          <article key={listing.id} className={styles.tableRow}>
+            <div className={styles.listingCell}>
+              <img src={listing.coverImage} alt={listing.title} />
+              <div>
+                <strong>{listing.title}</strong>
+                <p className={styles.muted}>{listing.address}</p>
+              </div>
             </div>
-            <span>{listing.status}</span>
+            <Badge tone={toneForStatus(listing.status)}>{statusLabel(listing.status)}</Badge>
             <span>{listing.rating} estrellas</span>
-            <strong>${listing.pricePerNight}</strong>
-            <Link to={`/listings/${listing.id}`} style={styles.link}>Ver</Link>
+            <strong>{money(listing.pricePerNight, listing.currency)}</strong>
+            <div className={styles.actions}>
+              <Button as={Link} to={`/listings/${listing.id}`} variant="secondary" size="small"><Eye size={15} /> Ver</Button>
+              <Button type="button" variant="ghost" size="small"><Pencil size={15} /> Editar</Button>
+              <Button type="button" variant="ghost" size="small"><PauseCircle size={15} /> Pausar</Button>
+            </div>
           </article>
         ))}
       </section>
-    </main>
+    </DashboardShell>
   );
 }
-
-const styles = {
-  page: { minHeight: '100vh', background: '#f7f7f2', color: '#172026', padding: 28 },
-  header: { maxWidth: 1180, margin: '0 auto 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 18 },
-  eyebrow: { color: '#d64b6a', fontWeight: 800, textTransform: 'uppercase', fontSize: 12, letterSpacing: 1 },
-  title: { margin: '8px 0 0', fontSize: 42, lineHeight: 1.05 },
-  button: { textDecoration: 'none', background: '#172026', color: '#fff', padding: '12px 16px', borderRadius: 8, fontWeight: 800 },
-  table: { maxWidth: 1180, margin: '0 auto', background: '#fff', border: '1px solid #e8e3dc', borderRadius: 8, padding: 10 },
-  row: { display: 'grid', gridTemplateColumns: '80px 1fr 110px 110px 80px 50px', gap: 14, alignItems: 'center', padding: 12, borderBottom: '1px solid #ece7df' },
-  image: { width: 80, height: 62, objectFit: 'cover', borderRadius: 6 },
-  muted: { margin: 0, color: '#64727d' },
-  link: { color: '#d64b6a', fontWeight: 800, textDecoration: 'none' },
-};

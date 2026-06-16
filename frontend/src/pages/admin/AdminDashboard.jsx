@@ -1,79 +1,128 @@
+import { Activity, ShieldAlert } from 'lucide-react';
+import DashboardShell from '../../components/layout/DashboardShell';
+import Badge from '../../components/ui/Badge';
+import StatCard from '../../components/ui/StatCard';
+import { money, shortDate, statusLabel } from '../../utils/formatters';
 import mockData from '../../mocks/api-mocks.json';
+import styles from './AdminDashboard.module.css';
+
+function toneForStatus(status) {
+  if (['active', 'closed', 'low'].includes(status)) return 'success';
+  if (['medium', 'open'].includes(status)) return 'warning';
+  if (['high', 'rejected'].includes(status)) return 'error';
+  return 'neutral';
+}
+
+function labelForKpi(key) {
+  const labels = {
+    totalUsers: 'Usuarios',
+    activeHosts: 'Anfitriones',
+    activeListings: 'Anuncios',
+    bookingsThisMonth: 'Reservas del mes',
+    grossRevenue: 'Revenue bruto',
+    conversionRate: 'Conversion',
+  };
+  return labels[key] || key;
+}
+
+function valueForKpi(key, value) {
+  if (key === 'grossRevenue') return money(value);
+  if (key === 'conversionRate') return `${value}%`;
+  return value.toLocaleString('es-BO');
+}
 
 export default function AdminDashboard() {
   const dashboard = mockData.admin.dashboardResponse;
+  const maxRevenue = Math.max(...dashboard.revenueSeries.map((item) => item.value));
 
   return (
-    <main style={styles.page}>
-      <section style={styles.header}>
-        <span style={styles.eyebrow}>Admin</span>
-        <h1 style={styles.title}>Metricas, usuarios y reportes mockeados.</h1>
-      </section>
-
-      <section style={styles.stats}>
+    <DashboardShell
+      role="admin"
+      eyebrow="Administracion"
+      title="Control general de StayBnb"
+      subtitle="Supervisa usuarios, revenue, reportes y eventos de moderacion desde una vista operativa."
+      actions={<Badge tone="accent"><Activity size={14} /> Sistema activo</Badge>}
+    >
+      <section className={styles.statsGrid}>
         {Object.entries(dashboard.kpis).map(([key, value]) => (
-          <div key={key} style={styles.stat}>
-            <strong>{typeof value === 'number' && key.includes('Revenue') ? `$${value}` : value}</strong>
-            <span>{key}</span>
-          </div>
+          <StatCard key={key} label={labelForKpi(key)} value={valueForKpi(key, value)} />
         ))}
       </section>
 
-      <section style={styles.layout}>
-        <article style={styles.panel}>
-          <h2 style={styles.sectionTitle}>Revenue series</h2>
-          <div style={styles.bars}>
+      <section className={styles.layout}>
+        <article className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <h2>Revenue mensual</h2>
+            <Badge tone="success">{money(dashboard.kpis.grossRevenue)}</Badge>
+          </div>
+          <div className={styles.chart} aria-label="Revenue por mes">
             {dashboard.revenueSeries.map((item) => (
-              <div key={item.month} style={styles.barItem}>
-                <div style={{ ...styles.bar, height: `${item.value / 900}px` }} />
+              <div key={item.month} className={styles.barItem}>
+                <div className={styles.bar} style={{ height: `${Math.round((item.value / maxRevenue) * 210)}px` }} />
                 <strong>{item.month}</strong>
-                <span>${item.value}</span>
+                <span>{money(item.value)}</span>
               </div>
             ))}
           </div>
         </article>
 
-        <article style={styles.panel}>
-          <h2 style={styles.sectionTitle}>Usuarios recientes</h2>
-          {dashboard.recentUsers.map((user) => (
-            <div key={user.id} style={styles.row}>
-              <strong>{user.name}</strong>
-              <span>{user.role}</span>
-              <small>{user.status}</small>
-            </div>
-          ))}
-        </article>
+        <aside className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <h2>Usuarios recientes</h2>
+            <Badge tone="neutral">{dashboard.recentUsers.length}</Badge>
+          </div>
+          <div className={styles.list}>
+            {dashboard.recentUsers.map((user) => (
+              <article key={user.id} className={styles.row}>
+                <div>
+                  <strong>{user.name}</strong>
+                  <p className={styles.muted}>{shortDate(user.createdAt)}</p>
+                </div>
+                <Badge tone="neutral">{user.role}</Badge>
+                <Badge tone={toneForStatus(user.status)}>{statusLabel(user.status)}</Badge>
+              </article>
+            ))}
+          </div>
+        </aside>
       </section>
 
-      <section style={styles.panelWide}>
-        <h2 style={styles.sectionTitle}>Reportes y moderacion</h2>
-        {mockData.admin.reportsResponse.map((report) => (
-          <div key={report.id} style={styles.report}>
-            <strong>{report.title}</strong>
-            <span>{report.type}</span>
-            <span>{report.priority}</span>
-            <small>{report.status}</small>
+      <section className={styles.layout}>
+        <article className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <h2>Reportes y moderacion</h2>
+            <ShieldAlert size={20} />
           </div>
-        ))}
+          <div className={styles.list}>
+            {mockData.admin.reportsResponse.map((report) => (
+              <article key={report.id} className={styles.report}>
+                <div>
+                  <strong>{report.title}</strong>
+                  <p className={styles.muted}>{shortDate(report.createdAt)}</p>
+                </div>
+                <span>{report.type}</span>
+                <Badge tone={toneForStatus(report.priority)}>{statusLabel(report.priority)}</Badge>
+                <Badge tone={toneForStatus(report.status)}>{statusLabel(report.status)}</Badge>
+              </article>
+            ))}
+          </div>
+        </article>
+
+        <aside className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <h2>Eventos recientes</h2>
+            <Badge tone="warning">{dashboard.recentModerationEvents.length}</Badge>
+          </div>
+          <div className={styles.eventList}>
+            {dashboard.recentModerationEvents.map((event) => (
+              <article key={event.id} className={styles.event}>
+                <strong>{event.message}</strong>
+                <p className={styles.muted}>{event.type} - {shortDate(event.createdAt)}</p>
+                <Badge tone={toneForStatus(event.severity)}>{statusLabel(event.severity)}</Badge>
+              </article>
+            ))}
+          </div>
+        </aside>
       </section>
-    </main>
+    </DashboardShell>
   );
 }
-
-const styles = {
-  page: { minHeight: '100vh', background: '#f7f7f2', color: '#172026', padding: 28 },
-  header: { maxWidth: 1180, margin: '0 auto 22px' },
-  eyebrow: { color: '#d64b6a', fontWeight: 800, textTransform: 'uppercase', fontSize: 12, letterSpacing: 1 },
-  title: { margin: '8px 0 0', fontSize: 42, lineHeight: 1.05 },
-  stats: { maxWidth: 1180, margin: '0 auto 18px', display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 14 },
-  stat: { background: '#fff', border: '1px solid #e8e3dc', borderRadius: 8, padding: 18, display: 'grid', gap: 4 },
-  layout: { maxWidth: 1180, margin: '0 auto 18px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 },
-  panel: { background: '#fff', border: '1px solid #e8e3dc', borderRadius: 8, padding: 20 },
-  panelWide: { maxWidth: 1180, margin: '0 auto', background: '#fff', border: '1px solid #e8e3dc', borderRadius: 8, padding: 20 },
-  sectionTitle: { margin: '0 0 14px', fontSize: 22 },
-  bars: { minHeight: 170, display: 'flex', alignItems: 'end', gap: 18 },
-  barItem: { display: 'grid', justifyItems: 'center', gap: 6, color: '#64727d' },
-  bar: { width: 42, borderRadius: '8px 8px 0 0', background: '#d64b6a' },
-  row: { display: 'grid', gridTemplateColumns: '1fr 90px 80px', gap: 12, padding: '12px 0', borderBottom: '1px solid #ece7df' },
-  report: { display: 'grid', gridTemplateColumns: '1fr 180px 100px 90px', gap: 12, padding: '12px 0', borderBottom: '1px solid #ece7df' },
-};

@@ -31,7 +31,7 @@ export default function LoginPage() {
     <div className={styles.wrapper}>
       <div className={styles.left}>
         <div className={styles.brand}>
-          <span className={styles.logo}>⌂</span>
+          <span className={styles.logo}>S</span>
           <span className={styles.logoName}>StayBnb</span>
         </div>
         <div className={styles.heroText}>

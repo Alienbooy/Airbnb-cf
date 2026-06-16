@@ -55,7 +55,7 @@
   font-size: 1.3rem;
   font-weight: 700;
   color: #fff;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .heroText {
@@ -71,7 +71,7 @@
   font-weight: 700;
   color: #fff;
   line-height: 1.2;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
   margin: 0 0 1rem;
 }
 
@@ -98,7 +98,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #fff;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .stat span {
@@ -189,7 +189,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #fff;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   margin: 0 0 0.3rem;
 }
 

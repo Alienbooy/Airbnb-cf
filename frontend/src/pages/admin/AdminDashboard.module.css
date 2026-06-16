@@ -1,0 +1,137 @@
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: 18px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  padding: 20px;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.panelHeader h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.chart {
+  min-height: 260px;
+  display: flex;
+  align-items: end;
+  gap: 18px;
+  border-bottom: 1px solid var(--color-border);
+  padding: 20px 6px 0;
+}
+
+.barItem {
+  flex: 1;
+  min-width: 48px;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  color: var(--color-muted);
+  font-size: 0.86rem;
+}
+
+.bar {
+  width: 100%;
+  max-width: 56px;
+  min-height: 36px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--color-primary);
+}
+
+.list {
+  display: grid;
+  gap: 0;
+}
+
+.row,
+.report {
+  display: grid;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid var(--color-border);
+  padding: 13px 0;
+}
+
+.row:first-child,
+.report:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.row {
+  grid-template-columns: minmax(0, 1fr) 90px 90px;
+}
+
+.report {
+  grid-template-columns: minmax(0, 1fr) 150px 100px 100px;
+}
+
+.muted {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+}
+
+.eventList {
+  display: grid;
+  gap: 12px;
+}
+
+.event {
+  display: grid;
+  gap: 6px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+}
+
+.event:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+@media (max-width: 1180px) {
+  .statsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .statsGrid,
+  .row,
+  .report {
+    grid-template-columns: 1fr;
+  }
+
+  .chart {
+    overflow-x: auto;
+  }
+
+  .barItem {
+    min-width: 70px;
+  }
+}

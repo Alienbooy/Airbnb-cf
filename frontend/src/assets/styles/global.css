@@ -1,7 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --color-page: #fcf9f8;
+  --color-page-soft: #f7f5f4;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f0eded;
+  --color-text: #222222;
+  --color-muted: #717171;
+  --color-border: #dddddd;
+  --color-border-strong: #b7aeae;
+  --color-primary: #ff385c;
+  --color-primary-dark: #ba0036;
+  --color-primary-soft: #ffdada;
+  --color-success: #008a05;
+  --color-warning: #b36b00;
+  --color-danger: #ba1a1a;
+  --shadow-soft: 0 6px 16px rgba(0, 0, 0, 0.12);
+  --shadow-panel: 0 8px 28px rgba(0, 0, 0, 0.14);
+  --radius-sm: 4px;
+  --radius: 8px;
+  --container: 1280px;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html {
@@ -11,21 +33,51 @@ html {
 }
 
 body {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  background: #0a0a0f;
-  color: #fff;
-  line-height: 1.6;
+  margin: 0;
+  min-width: 320px;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--color-page);
+  color: var(--color-text);
+  line-height: 1.5;
 }
 
-a { color: inherit; }
-
-button { font-family: inherit; }
-
-input, select, textarea {
-  font-family: inherit;
+a {
+  color: inherit;
 }
 
-::-webkit-scrollbar { width: 6px; }
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+::selection {
+  background: var(--color-primary-soft);
+  color: var(--color-text);
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+::-webkit-scrollbar-thumb { background: rgba(34, 34, 34, 0.16); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(34, 34, 34, 0.28); }

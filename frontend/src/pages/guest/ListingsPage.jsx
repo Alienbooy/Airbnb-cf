@@ -1,60 +1,178 @@
-import { Link } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Search, SlidersHorizontal, X } from 'lucide-react';
+import AppShell from '../../components/layout/AppShell';
+import Button from '../../components/ui/Button';
+import EmptyState from '../../components/ui/EmptyState';
+import ListingCard from '../../components/listings/ListingCard';
+import { amenityLabel } from '../../utils/formatters';
 import mockData from '../../mocks/api-mocks.json';
+import styles from './GuestPages.module.css';
 
 const listings = mockData.listings.summaryResponse;
+const saved = new Set(mockData.savedListings);
 
 export default function ListingsPage() {
-  const cities = [...new Set(listings.map((listing) => listing.city))];
+  const [searchParams] = useSearchParams();
+  const cities = useMemo(() => [...new Set(listings.map((listing) => listing.city))], []);
+  const amenities = useMemo(() => [...new Set(listings.flatMap((listing) => listing.amenities))].slice(0, 8), []);
+
+  const [filters, setFilters] = useState({
+    query: '',
+    city: searchParams.get('city') || '',
+    maxPrice: '',
+    guests: searchParams.get('guests') || '',
+    rating: '',
+    amenity: '',
+    sort: 'recommended',
+  });
+
+  function update(name, value) {
+    setFilters((current) => ({ ...current, [name]: value }));
+  }
+
+  function clearFilters() {
+    setFilters({ query: '', city: '', maxPrice: '', guests: '', rating: '', amenity: '', sort: 'recommended' });
+  }
+
+  const filtered = useMemo(() => {
+    const normalizedQuery = filters.query.trim().toLowerCase();
+
+    const next = listings.filter((listing) => {
+      const matchesQuery = !normalizedQuery ||
+        listing.title.toLowerCase().includes(normalizedQuery) ||
+        listing.city.toLowerCase().includes(normalizedQuery) ||
+        listing.country.toLowerCase().includes(normalizedQuery);
+      const matchesCity = !filters.city || listing.city === filters.city;
+      const matchesPrice = !filters.maxPrice || listing.pricePerNight <= Number(filters.maxPrice);
+      const matchesGuests = !filters.guests || listing.guests >= Number(filters.guests);
+      const matchesRating = !filters.rating || listing.rating >= Number(filters.rating);
+      const matchesAmenity = !filters.amenity || listing.amenities.includes(filters.amenity);
+
+      return matchesQuery && matchesCity && matchesPrice && matchesGuests && matchesRating && matchesAmenity;
+    });
+
+    if (filters.sort === 'price-low') return [...next].sort((a, b) => a.pricePerNight - b.pricePerNight);
+    if (filters.sort === 'price-high') return [...next].sort((a, b) => b.pricePerNight - a.pricePerNight);
+    if (filters.sort === 'rating') return [...next].sort((a, b) => b.rating - a.rating);
+    return next;
+  }, [filters]);
 
   return (
-    <main style={styles.page}>
-      <section style={styles.hero}>
-        <div>
-          <span style={styles.eyebrow}>Explorar alojamientos</span>
-          <h1 style={styles.title}>Estancias mockeadas con datos reales de frontend.</h1>
-          <p style={styles.copy}>Todos los cards salen de <code>api-mocks.json</code> y usan imagenes remotas de internet.</p>
-        </div>
-        <div style={styles.filters}>
-          {cities.map((city) => <span key={city} style={styles.chip}>{city}</span>)}
-        </div>
-      </section>
-
-      <section style={styles.grid}>
-        {listings.map((listing) => (
-          <Link key={listing.id} to={`/listings/${listing.id}`} style={styles.card}>
-            <img src={listing.coverImage} alt={listing.title} style={styles.image} />
-            <div style={styles.cardBody}>
-              <div style={styles.row}>
-                <strong>{listing.city}, {listing.country}</strong>
-                <span>{listing.rating} estrellas</span>
-              </div>
-              <h2 style={styles.cardTitle}>{listing.title}</h2>
-              <p style={styles.muted}>{listing.subtitle}</p>
-              <div style={styles.row}>
-                <span>{listing.guests} huespedes · {listing.bedrooms} hab.</span>
-                <strong>${listing.pricePerNight} {listing.currency}</strong>
-              </div>
+    <AppShell>
+      <main className={styles.page}>
+        <section className={`${styles.container} ${styles.section}`}>
+          <header className={styles.listHeader}>
+            <div>
+              <span className={styles.eyebrow}>Catalogo</span>
+              <h1 className={styles.pageTitle}>Alojamientos disponibles</h1>
+              <p>Filtra por destino, precio y comodidad para encontrar el espacio correcto.</p>
             </div>
-          </Link>
-        ))}
-      </section>
-    </main>
+            <span className={styles.resultsMeta}>{filtered.length} resultados</span>
+          </header>
+
+          <div className={styles.filters}>
+            <label className={styles.filterBox}>
+              <span className={styles.filterLabel}>Buscar</span>
+              <span className={styles.searchControl}>
+                <Search size={16} />
+                <input
+                  className={styles.searchTextInput}
+                  value={filters.query}
+                  onChange={(event) => update('query', event.target.value)}
+                  placeholder="Titulo, ciudad o pais"
+                />
+              </span>
+            </label>
+
+            <label className={styles.filterBox}>
+              <span className={styles.filterLabel}>Ciudad</span>
+              <select className={styles.filterControl} value={filters.city} onChange={(event) => update('city', event.target.value)}>
+                <option value="">Todas</option>
+                {cities.map((city) => <option key={city} value={city}>{city}</option>)}
+              </select>
+            </label>
+
+            <label className={styles.filterBox}>
+              <span className={styles.filterLabel}>Precio max.</span>
+              <select className={styles.filterControl} value={filters.maxPrice} onChange={(event) => update('maxPrice', event.target.value)}>
+                <option value="">Sin limite</option>
+                <option value="80">Hasta 80 USD</option>
+                <option value="130">Hasta 130 USD</option>
+                <option value="180">Hasta 180 USD</option>
+                <option value="240">Hasta 240 USD</option>
+              </select>
+            </label>
+
+            <label className={styles.filterBox}>
+              <span className={styles.filterLabel}>Huespedes</span>
+              <select className={styles.filterControl} value={filters.guests} onChange={(event) => update('guests', event.target.value)}>
+                <option value="">Cualquiera</option>
+                {[1, 2, 3, 4, 5, 6].map((value) => <option key={value} value={value}>{value}+</option>)}
+              </select>
+            </label>
+
+            <label className={styles.filterBox}>
+              <span className={styles.filterLabel}>Ordenar</span>
+              <select className={styles.filterControl} value={filters.sort} onChange={(event) => update('sort', event.target.value)}>
+                <option value="recommended">Recomendados</option>
+                <option value="rating">Mejor rating</option>
+                <option value="price-low">Menor precio</option>
+                <option value="price-high">Mayor precio</option>
+              </select>
+            </label>
+
+            <label className={styles.filterBox}>
+              <span className={styles.filterLabel}>Rating</span>
+              <select className={styles.filterControl} value={filters.rating} onChange={(event) => update('rating', event.target.value)}>
+                <option value="">Todos</option>
+                <option value="4.7">4.7+</option>
+                <option value="4.85">4.85+</option>
+                <option value="4.9">4.9+</option>
+              </select>
+            </label>
+
+            <label className={styles.filterBox}>
+              <span className={styles.filterLabel}>Amenity</span>
+              <select className={styles.filterControl} value={filters.amenity} onChange={(event) => update('amenity', event.target.value)}>
+                <option value="">Todas</option>
+                {amenities.map((amenity) => <option key={amenity} value={amenity}>{amenityLabel(amenity)}</option>)}
+              </select>
+            </label>
+
+            <div className={styles.filterBox}>
+              <span className={styles.filterLabel}>Filtros</span>
+              <Button type="button" variant="secondary" onClick={clearFilters}>
+                <X size={16} /> Limpiar
+              </Button>
+            </div>
+          </div>
+
+          {filtered.length > 0 ? (
+            <div className={styles.grid}>
+              {filtered.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  saved={saved.has(listing.id)}
+                  badge={listing.host.superhost ? 'Superhost' : undefined}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="No encontramos alojamientos"
+              message="Ajusta los filtros o vuelve al catalogo completo para explorar mas opciones."
+            >
+              <div className={styles.emptyAction}>
+                <Button type="button" variant="secondary" onClick={clearFilters}>
+                  <SlidersHorizontal size={18} /> Restablecer filtros
+                </Button>
+              </div>
+            </EmptyState>
+          )}
+        </section>
+      </main>
+    </AppShell>
   );
 }
-
-const styles = {
-  page: { minHeight: '100vh', background: '#f7f7f2', color: '#172026', padding: '32px' },
-  hero: { maxWidth: 1180, margin: '0 auto 28px', display: 'grid', gridTemplateColumns: '1.3fr 0.7fr', gap: 24, alignItems: 'end' },
-  eyebrow: { color: '#d64b6a', fontWeight: 800, textTransform: 'uppercase', fontSize: 12, letterSpacing: 1 },
-  title: { margin: '8px 0', fontSize: 44, lineHeight: 1.02, maxWidth: 760 },
-  copy: { color: '#5f6b76', fontSize: 17 },
-  filters: { display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'flex-end' },
-  chip: { padding: '10px 14px', borderRadius: 999, background: '#fff', border: '1px solid #e6e2dc', fontWeight: 700 },
-  grid: { maxWidth: 1180, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 },
-  card: { color: 'inherit', textDecoration: 'none', background: '#fff', border: '1px solid #e8e3dc', borderRadius: 8, overflow: 'hidden', boxShadow: '0 16px 36px rgba(23,32,38,0.08)' },
-  image: { width: '100%', aspectRatio: '1.25 / 1', objectFit: 'cover', display: 'block' },
-  cardBody: { padding: 16, display: 'grid', gap: 8 },
-  row: { display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', color: '#5f6b76', fontSize: 14 },
-  cardTitle: { margin: 0, fontSize: 20, color: '#172026' },
-  muted: { margin: 0, color: '#697782' },
-};

@@ -1,0 +1,313 @@
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+  align-items: start;
+}
+
+.panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  padding: 20px;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.panelHeader h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.propertyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.propertyItem {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  border-top: 1px solid var(--color-border);
+  padding-top: 14px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.propertyItem:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.propertyItem img {
+  width: 110px;
+  height: 82px;
+  border-radius: var(--radius);
+  object-fit: cover;
+}
+
+.propertyItem h3,
+.calendarItem h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.muted {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+}
+
+.calendarList {
+  display: grid;
+  gap: 12px;
+}
+
+.calendarItem {
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+}
+
+.calendarItem:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) 180px auto;
+  gap: 12px;
+  margin-bottom: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  padding: 14px;
+}
+
+.searchInput,
+.select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  color: var(--color-text);
+  padding: 10px 12px;
+  outline: 0;
+}
+
+.searchWrap {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  color: var(--color-muted);
+}
+
+.searchInputWithIcon {
+  padding-left: 38px;
+}
+
+.table {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.tableHead,
+.tableRow {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.5fr) 110px 110px 100px 240px;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+}
+
+.tableHead {
+  background: var(--color-surface-muted);
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.tableRow {
+  border-top: 1px solid var(--color-border);
+}
+
+.listingCell {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.listingCell img {
+  width: 82px;
+  height: 62px;
+  border-radius: var(--radius);
+  object-fit: cover;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.formLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: 18px;
+  align-items: start;
+}
+
+.form {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  padding: 20px;
+  display: grid;
+  gap: 18px;
+}
+
+.formSection {
+  display: grid;
+  gap: 14px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 18px;
+}
+
+.formSection:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.formSection h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.amenityGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.checkBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 10px;
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
+.checkBox input {
+  accent-color: var(--color-primary);
+}
+
+.preview {
+  position: sticky;
+  top: 98px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #ffffff;
+  padding: 18px;
+}
+
+.preview h2 {
+  margin: 0 0 14px;
+  font-size: 1.2rem;
+}
+
+.previewImage {
+  width: 100%;
+  aspect-ratio: 1.25 / 1;
+  border-radius: var(--radius);
+  object-fit: cover;
+  background: var(--color-surface-muted);
+}
+
+.previewMeta {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+  .statsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .layout,
+  .formLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .preview {
+    position: static;
+  }
+
+  .tableHead {
+    display: none;
+  }
+
+  .tableRow {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 720px) {
+  .statsGrid,
+  .propertyGrid,
+  .filters,
+  .fieldGrid,
+  .amenityGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .propertyItem,
+  .listingCell {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .propertyItem img,
+  .listingCell img {
+    width: 88px;
+    height: 68px;
+  }
+}

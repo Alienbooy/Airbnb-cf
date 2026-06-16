@@ -1,102 +1,192 @@
+import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { ArrowLeft, Bath, BedDouble, CalendarDays, Check, Home, Star, Users } from 'lucide-react';
+import AppShell from '../../components/layout/AppShell';
+import Badge from '../../components/ui/Badge';
+import Button from '../../components/ui/Button';
+import FormField from '../../components/ui/FormField';
+import { amenityLabel, compactDate, money, nightsBetween } from '../../utils/formatters';
 import mockData from '../../mocks/api-mocks.json';
+import styles from './GuestPages.module.css';
 
 export default function ListingDetailPage() {
   const { id } = useParams();
   const listing = mockData.listings.summaryResponse.find((item) => item.id === id || item.slug === id) || mockData.listings.summaryResponse[0];
   const reviews = mockData.reviews.filter((review) => review.listingId === listing.id);
-  const nights = 3;
-  const total = listing.pricePerNight * nights + 25 + 15;
+  const detail = mockData.listings.detailResponse;
+  const [booking, setBooking] = useState({ checkIn: '2026-06-20', checkOut: '2026-06-23', guests: String(listing.guests) });
+
+  const gallery = useMemo(() => {
+    const unique = [...new Set([listing.coverImage, ...listing.images])];
+    return unique.length >= 4 ? unique.slice(0, 4) : [...unique, ...unique].slice(0, 4);
+  }, [listing]);
+
+  const nights = nightsBetween(booking.checkIn, booking.checkOut);
+  const subtotal = listing.pricePerNight * nights;
+  const serviceFee = Math.round(subtotal * 0.1);
+  const cleaningFee = listing.pricePerNight > 150 ? 55 : 25;
+  const total = subtotal + serviceFee + cleaningFee;
+
+  function update(name, value) {
+    setBooking((current) => ({ ...current, [name]: value }));
+  }
 
   return (
-    <main style={styles.page}>
-      <Link to="/listings" style={styles.back}>Volver a alojamientos</Link>
+    <AppShell>
+      <main className={styles.page}>
+        <section className={`${styles.container} ${styles.detailHeader}`}>
+          <Link to="/listings" className={styles.backLink}>
+            <ArrowLeft size={18} /> Volver al catalogo
+          </Link>
 
-      <section style={styles.header}>
-        <div>
-          <h1 style={styles.title}>{listing.title}</h1>
-          <p style={styles.muted}>{listing.city}, {listing.country} · {listing.rating} estrellas · {listing.reviewCount} reviews</p>
-        </div>
-        <strong style={styles.price}>${listing.pricePerNight} {listing.currency} / noche</strong>
-      </section>
-
-      <section style={styles.gallery}>
-        {listing.images.map((image) => (
-          <img key={image} src={image} alt={listing.title} style={styles.galleryImage} />
-        ))}
-      </section>
-
-      <section style={styles.content}>
-        <article style={styles.panel}>
-          <div style={styles.host}>
-            <img src={listing.host.avatar} alt={listing.host.name} style={styles.avatar} />
+          <div className={styles.detailTitleRow}>
             <div>
-              <h2 style={styles.sectionTitle}>Anfitrion: {listing.host.name}</h2>
-              <p style={styles.muted}>Superhost · responde en {listing.host.responseTime} · {listing.host.responseRate}% de respuesta</p>
+              <h1 className={styles.pageTitle}>{listing.title}</h1>
+              <div className={styles.detailMeta}>
+                <span><Star size={16} fill="currentColor" /> {listing.rating}</span>
+                <span>{listing.reviewCount} reviews</span>
+                <span>{listing.city}, {listing.country}</span>
+              </div>
             </div>
+            <Badge tone={listing.host.superhost ? 'accent' : 'neutral'}>
+              {listing.host.superhost ? 'Superhost' : 'Anfitrion verificado'}
+            </Badge>
           </div>
-          <p style={styles.description}>{listing.description}</p>
-          <h3 style={styles.smallTitle}>Comodidades</h3>
-          <div style={styles.amenities}>
-            {listing.amenities.map((amenity) => <span key={amenity} style={styles.chip}>{amenity}</span>)}
-          </div>
-          <h3 style={styles.smallTitle}>Reviews mockeadas</h3>
-          <div style={styles.reviews}>
-            {reviews.map((review) => (
-              <div key={review.id} style={styles.review}>
-                <img src={review.avatar} alt={review.guestName} style={styles.reviewAvatar} />
+        </section>
+
+        <section className={`${styles.container} ${styles.gallery}`} aria-label="Galeria de alojamiento">
+          {gallery.map((image, index) => (
+            <img key={`${image}-${index}`} src={image} alt={`${listing.title} ${index + 1}`} />
+          ))}
+        </section>
+
+        <section className={`${styles.container} ${styles.detailLayout}`}>
+          <div className={styles.detailMain}>
+            <section className={styles.plainBlock}>
+              <div className={styles.hostRow}>
+                <img src={listing.host.avatar} alt={listing.host.name} />
                 <div>
-                  <strong>{review.guestName}</strong>
-                  <p style={styles.muted}>{review.rating} estrellas · {review.createdAt}</p>
-                  <p style={styles.reviewText}>{review.comment}</p>
+                  <h2>Alojamiento publicado por {listing.host.name}</h2>
+                  <p className={styles.muted}>
+                    Responde en {listing.host.responseTime} - {listing.host.responseRate}% de respuesta
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        </article>
+            </section>
 
-        <aside style={styles.booking}>
-          <h2 style={styles.sectionTitle}>Reserva demo</h2>
-          <div style={styles.bookingRow}><span>Entrada</span><strong>20 jun 2026</strong></div>
-          <div style={styles.bookingRow}><span>Salida</span><strong>23 jun 2026</strong></div>
-          <div style={styles.bookingRow}><span>Huespedes</span><strong>{listing.guests}</strong></div>
-          <hr style={styles.hr} />
-          <div style={styles.bookingRow}><span>${listing.pricePerNight} x {nights} noches</span><strong>${listing.pricePerNight * nights}</strong></div>
-          <div style={styles.bookingRow}><span>Servicio</span><strong>$25</strong></div>
-          <div style={styles.bookingRow}><span>Limpieza</span><strong>$15</strong></div>
-          <div style={styles.total}><span>Total</span><strong>${total} {listing.currency}</strong></div>
-          <button style={styles.button}>Reservar con mock</button>
-        </aside>
-      </section>
-    </main>
+            <section className={styles.plainBlock}>
+              <div className={styles.detailMeta}>
+                <span><Users size={17} /> {listing.guests} huespedes</span>
+                <span><BedDouble size={17} /> {listing.bedrooms} habitaciones</span>
+                <span><Home size={17} /> {listing.beds} camas</span>
+                <span><Bath size={17} /> {listing.baths} banos</span>
+              </div>
+            </section>
+
+            <section className={styles.plainBlock}>
+              <h2>Descripcion</h2>
+              <p className={styles.description}>{listing.description}</p>
+            </section>
+
+            <section className={styles.plainBlock}>
+              <h2>Lo que ofrece este lugar</h2>
+              <div className={styles.amenities}>
+                {listing.amenities.map((amenity) => (
+                  <div key={amenity} className={styles.amenity}>
+                    <Check size={17} /> {amenityLabel(amenity)}
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={styles.plainBlock}>
+              <h2>Reglas y horarios</h2>
+              <div className={styles.amenities}>
+                <div className={styles.amenity}><CalendarDays size={17} /> Check-in desde {detail.checkInTime}</div>
+                <div className={styles.amenity}><CalendarDays size={17} /> Check-out hasta {detail.checkOutTime}</div>
+                {detail.houseRules.map((rule) => (
+                  <div key={rule} className={styles.amenity}><Check size={17} /> {rule}</div>
+                ))}
+              </div>
+            </section>
+
+            <section className={styles.plainBlock}>
+              <h2>Reviews</h2>
+              <div className={styles.reviews}>
+                {reviews.length ? reviews.map((review) => (
+                  <article key={review.id} className={styles.review}>
+                    <img className={styles.reviewAvatar} src={review.avatar} alt={review.guestName} />
+                    <div>
+                      <strong>{review.guestName}</strong>
+                      <p>{review.rating} estrellas - {compactDate(review.createdAt)}</p>
+                      <p>{review.comment}</p>
+                    </div>
+                  </article>
+                )) : (
+                  <p className={styles.muted}>Este alojamiento aun no tiene reviews publicadas.</p>
+                )}
+              </div>
+            </section>
+          </div>
+
+          <aside className={styles.booking}>
+            <div className={styles.bookingPrice}>
+              <div>
+                <strong>{money(listing.pricePerNight, listing.currency)}</strong>
+                <span> noche</span>
+              </div>
+              <span><Star size={15} fill="currentColor" /> {listing.rating}</span>
+            </div>
+
+            <div className={styles.bookingForm}>
+              <div className={styles.bookingGrid}>
+                <FormField
+                  label="Entrada"
+                  type="date"
+                  value={booking.checkIn}
+                  min="2026-06-16"
+                  onChange={(event) => update('checkIn', event.target.value)}
+                />
+                <FormField
+                  label="Salida"
+                  type="date"
+                  value={booking.checkOut}
+                  min={booking.checkIn}
+                  onChange={(event) => update('checkOut', event.target.value)}
+                />
+              </div>
+              <FormField label="Huespedes" as="select" value={booking.guests} onChange={(event) => update('guests', event.target.value)}>
+                <select value={booking.guests} onChange={(event) => update('guests', event.target.value)}>
+                  {Array.from({ length: listing.guests }, (_, index) => index + 1).map((value) => (
+                    <option key={value} value={value}>{value} huespedes</option>
+                  ))}
+                </select>
+              </FormField>
+            </div>
+
+            <div className={styles.summary}>
+              <div className={styles.summaryRow}>
+                <span>{money(listing.pricePerNight, listing.currency)} x {nights} noches</span>
+                <strong>{money(subtotal, listing.currency)}</strong>
+              </div>
+              <div className={styles.summaryRow}>
+                <span>Servicio</span>
+                <strong>{money(serviceFee, listing.currency)}</strong>
+              </div>
+              <div className={styles.summaryRow}>
+                <span>Limpieza</span>
+                <strong>{money(cleaningFee, listing.currency)}</strong>
+              </div>
+              <div className={styles.totalRow}>
+                <span>Total</span>
+                <strong>{money(total, listing.currency)}</strong>
+              </div>
+            </div>
+
+            <Button full type="button">Reservar</Button>
+          </aside>
+        </section>
+      </main>
+    </AppShell>
   );
 }
-
-const styles = {
-  page: { minHeight: '100vh', background: '#fbfaf7', color: '#172026', padding: '28px' },
-  back: { display: 'inline-flex', margin: '0 auto 16px', maxWidth: 1180, color: '#d64b6a', textDecoration: 'none', fontWeight: 800 },
-  header: { maxWidth: 1180, margin: '0 auto 18px', display: 'flex', justifyContent: 'space-between', gap: 20, alignItems: 'end' },
-  title: { margin: 0, fontSize: 42, lineHeight: 1.05 },
-  muted: { margin: 0, color: '#64727d' },
-  price: { fontSize: 20 },
-  gallery: { maxWidth: 1180, margin: '0 auto 24px', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 10 },
-  galleryImage: { width: '100%', height: 320, objectFit: 'cover', borderRadius: 8 },
-  content: { maxWidth: 1180, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, alignItems: 'start' },
-  panel: { background: '#fff', border: '1px solid #e8e3dc', borderRadius: 8, padding: 22 },
-  host: { display: 'flex', gap: 14, alignItems: 'center' },
-  avatar: { width: 58, height: 58, borderRadius: '50%', objectFit: 'cover' },
-  sectionTitle: { margin: 0, fontSize: 22 },
-  description: { color: '#2f3a42', fontSize: 17, margin: '22px 0', lineHeight: 1.7 },
-  smallTitle: { margin: '22px 0 10px', fontSize: 18 },
-  amenities: { display: 'flex', flexWrap: 'wrap', gap: 10 },
-  chip: { padding: '9px 12px', borderRadius: 999, background: '#f3f0eb', color: '#3b4650', fontWeight: 700 },
-  reviews: { display: 'grid', gap: 14 },
-  review: { display: 'flex', gap: 12, padding: 14, border: '1px solid #ece7df', borderRadius: 8 },
-  reviewAvatar: { width: 44, height: 44, borderRadius: '50%', objectFit: 'cover' },
-  reviewText: { margin: '6px 0 0', color: '#2f3a42' },
-  booking: { position: 'sticky', top: 20, background: '#fff', border: '1px solid #e8e3dc', borderRadius: 8, padding: 20, boxShadow: '0 16px 36px rgba(23,32,38,0.08)' },
-  bookingRow: { display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 12 },
-  hr: { border: 0, borderTop: '1px solid #ece7df', margin: '16px 0' },
-  total: { display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 16, fontSize: 20 },
-  button: { width: '100%', marginTop: 18, border: 0, borderRadius: 8, padding: '13px 16px', background: '#d64b6a', color: '#fff', fontWeight: 800, cursor: 'pointer' },
-};

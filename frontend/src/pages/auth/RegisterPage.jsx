@@ -31,7 +31,7 @@ export default function RegisterPage() {
 
     try {
       await register(form);
-      alert('¡Cuenta creada exitosamente! Por favor, inicia sesión para continuar.');
+      alert('Cuenta creada exitosamente. Por favor, inicia sesion para continuar.');
       navigate('/login');
     } catch {
       setErrors({ general: 'No se pudo crear la cuenta.' });
@@ -42,7 +42,7 @@ export default function RegisterPage() {
     <div className={styles.wrapper}>
       <div className={styles.left}>
         <div className={styles.brand}>
-          <span className={styles.logo}>⌂</span>
+          <span className={styles.logo}>S</span>
           <span className={styles.logoName}>StayBnb</span>
         </div>
         <div className={styles.heroText}>
@@ -50,9 +50,9 @@ export default function RegisterPage() {
           <p>Solo necesitas username, email y password para empezar.</p>
         </div>
         <div className={styles.benefitsList}>
-          <div className={styles.benefit}><span className={styles.checkMark}>✓</span> Explora alojamientos mockeados</div>
-          <div className={styles.benefit}><span className={styles.checkMark}>✓</span> Guarda favoritos y reservas</div>
-          <div className={styles.benefit}><span className={styles.checkMark}>✓</span> Acceso inmediato al dashboard</div>
+          <div className={styles.benefit}><span className={styles.checkMark}>OK</span> Explora alojamientos destacados</div>
+          <div className={styles.benefit}><span className={styles.checkMark}>OK</span> Guarda favoritos y reservas</div>
+          <div className={styles.benefit}><span className={styles.checkMark}>OK</span> Acceso inmediato al dashboard</div>
         </div>
       </div>
 
