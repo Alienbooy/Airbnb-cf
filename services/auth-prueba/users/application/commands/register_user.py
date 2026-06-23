@@ -21,7 +21,7 @@ def register_user(payload: Dict[str, Any]) -> User:
         event_type="user_registered",
         aggregate_id=str(user.id),
         payload={
-            "id": user.id,
+            "id": str(user.id),
             "username": user.username,
             "email": user.email,
             "roles": user.roles,

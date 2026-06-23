@@ -1,0 +1,52 @@
+package alojamientos.presentation;
+
+
+import alojamientos.application.ListingService;
+import alojamientos.application.dto.CreateListingRequest;
+import alojamientos.application.dto.ListingResponse;
+import alojamientos.application.dto.SearchListingResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/listings")
+@RequiredArgsConstructor
+public class ListingController {
+    private final ListingService listingService;
+
+    @PostMapping
+    @PreAuthorize("hasRole('HOST') or hasRole('ADMIN')")
+    public ListingResponse createListing(
+            @RequestHeader("X-Host-Id") UUID hostId,
+            @Valid @RequestBody CreateListingRequest request
+    ) {
+        return listingService.createListing(hostId, request);
+    }
+
+    @GetMapping("/{id}")
+    public ListingResponse getById(@PathVariable UUID id) {
+        return listingService.getById(id);
+    }
+
+    @GetMapping
+    public List<SearchListingResponse> searchByCity(@RequestParam String city) {
+        return listingService.searchByCity(city);
+    }
+
+    @PatchMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ListingResponse approveListing(@PathVariable UUID id) {
+        return listingService.approveListing(id);
+    }
+
+    @PatchMapping("/{id}/reject")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ListingResponse rejectListing(@PathVariable UUID id) {
+        return listingService.rejectListing(id);
+    }
+}
