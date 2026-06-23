@@ -7,6 +7,7 @@ import alojamientos.application.dto.ListingResponse;
 import alojamientos.application.dto.SearchListingResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class ListingController {
     private final ListingService listingService;
 
     @PostMapping
+    @PreAuthorize("hasRole('HOST') or hasRole('ADMIN')")
     public ListingResponse createListing(
             @RequestHeader("X-Host-Id") UUID hostId,
             @Valid @RequestBody CreateListingRequest request
@@ -37,11 +39,13 @@ public class ListingController {
     }
 
     @PatchMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
     public ListingResponse approveListing(@PathVariable UUID id) {
         return listingService.approveListing(id);
     }
 
     @PatchMapping("/{id}/reject")
+    @PreAuthorize("hasRole('ADMIN')")
     public ListingResponse rejectListing(@PathVariable UUID id) {
         return listingService.rejectListing(id);
     }
