@@ -14,6 +14,14 @@ from users.interfaces.api.serializers import (
 )
 
 
+def token_role_from_roles(roles):
+    if RoleChoices.ADMIN in roles:
+        return RoleChoices.ADMIN
+    if RoleChoices.HOST in roles:
+        return RoleChoices.HOST
+    return "guest"
+
+
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -38,7 +46,11 @@ class LoginView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
 
+        roles = [str(role) for role in (user.roles or [RoleChoices.CLIENT])]
         refresh = RefreshToken.for_user(user)
+        refresh["roles"] = roles
+        refresh["role"] = token_role_from_roles(roles)
+
         return Response(
             {
                 "user_id": user.id,

@@ -1,0 +1,33 @@
+services:
+  reservations-service:
+    build: .
+    container_name: reservations-service
+    restart: always
+    environment:
+      PORT: ${PORT:-4002}
+      DB_HOST: reservations-db
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-reservations_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-replace_with_auth_django_secret}
+    ports:
+      - "4002:4002"
+    depends_on:
+      - reservations-db
+
+  reservations-db:
+    image: postgres:16
+    container_name: reservations-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-reservations_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5442:5432"
+    volumes:
+      - reservations_db_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  reservations_db_data:

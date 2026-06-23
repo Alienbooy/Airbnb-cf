@@ -11,6 +11,7 @@ services:
     depends_on:
       - frontend
       - auth_service
+      - reservations-service
 
   frontend:
     image: node:20-alpine
@@ -55,6 +56,39 @@ services:
     volumes:
       - auth_db_data:/var/lib/postgresql/data
       - ./services/auth-prueba/docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  reservations-service:
+    build:
+      context: ./services/reservas-service
+    container_name: reservations-service
+    restart: always
+    env_file:
+      - ./services/auth-prueba/.env
+    environment:
+      PORT: 4002
+      DB_HOST: reservations-db
+      DB_PORT: 5432
+      DB_NAME: ${RESERVATIONS_DB_NAME:-reservations_db}
+      DB_USER: ${RESERVATIONS_DB_USER:-postgres}
+      DB_PASSWORD: ${RESERVATIONS_DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-}
+    ports:
+      - "4002:4002"
+    depends_on:
+      - reservations-db
+
+  reservations-db:
+    image: postgres:16
+    container_name: reservations-db
+    environment:
+      POSTGRES_DB: ${RESERVATIONS_DB_NAME:-reservations_db}
+      POSTGRES_USER: ${RESERVATIONS_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${RESERVATIONS_DB_PASSWORD:-postgres}
+    ports:
+      - "5442:5432"
+    volumes:
+      - reservations_db_data:/var/lib/postgresql/data
+      - ./services/reservas-service/docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   kafka:
     image: redpandadata/redpanda:latest
@@ -119,3 +153,4 @@ services:
 volumes:
   auth_db_data:
   frontend_node_modules:
+  reservations_db_data:
