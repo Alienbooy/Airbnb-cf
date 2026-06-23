@@ -5,6 +5,11 @@ from users.infrastructure.db.models import User
 
 
 def register_user(payload: Dict[str, Any]) -> User:
+    if User.objects.filter(username=payload["username"]).exists():
+        raise ValueError("username ya existe")
+    if User.objects.filter(email=payload["email"]).exists():
+        raise ValueError("email ya existe")
+
     user = User.objects.create_user(
         username=payload["username"],
         email=payload["email"],

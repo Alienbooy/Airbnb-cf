@@ -18,17 +18,12 @@ class RegisterSerializer(serializers.Serializer):
     def create(self, validated_data: dict) -> User:
         if "roles" not in validated_data or not validated_data["roles"]:
             validated_data["roles"] = [RoleChoices.CLIENT]
-        return register_user(validated_data)
+        try:
+            return register_user(validated_data)
+        except ValueError as e:
+            raise serializers.ValidationError({"detail": str(e)})
 
-    def validate_username(self, value: str) -> str:
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("username ya existe")
-        return value
 
-    def validate_email(self, value: str) -> str:
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("email ya existe")
-        return value
 
 
 class LoginSerializer(serializers.Serializer):
