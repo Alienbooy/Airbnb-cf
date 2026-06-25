@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserView',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.UUIDField(editable=False, primary_key=True, serialize=False)),
                 ('username', models.CharField(max_length=150)),
                 ('email', models.EmailField(max_length=254)),
                 ('created_at', models.DateTimeField()),
