@@ -39,9 +39,43 @@ for _ in range(30):
 raise SystemExit("Database not ready after timeout")
 PY
 
-python manage.py makemigrations users
-python manage.py migrate --noinput
-python manage.py migrate --database=read --noinput
-python manage.py create_admin
+python - <<'PY'
+import os
+import subprocess
+import psycopg2
+
+host = os.environ.get("DB_HOST", "auth_db")
+port = int(os.environ.get("DB_PORT", "5432"))
+name = os.environ.get("DB_NAME_WRITE", "airbnb_write")
+user = os.environ.get("DB_USER", "postgres")
+password = os.environ.get("DB_PASSWORD", "postgres")
+
+conn = psycopg2.connect(
+    host=host,
+    port=port,
+    dbname=name,
+    user=user,
+    password=password,
+)
+conn.autocommit = True
+cur = conn.cursor()
+
+print("Acquiring migration lock...", flush=True)
+cur.execute("SELECT pg_advisory_lock(839204)")
+
+try:
+    for command in (
+        ["python", "manage.py", "makemigrations", "users"],
+        ["python", "manage.py", "migrate", "--noinput"],
+        ["python", "manage.py", "migrate", "--database=read", "--noinput"],
+        ["python", "manage.py", "create_admin"],
+    ):
+        print("$ " + " ".join(command), flush=True)
+        subprocess.check_call(command)
+finally:
+    cur.execute("SELECT pg_advisory_unlock(839204)")
+    cur.close()
+    conn.close()
+PY
 
 exec "$@"

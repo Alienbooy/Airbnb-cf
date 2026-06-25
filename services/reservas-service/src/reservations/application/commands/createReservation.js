@@ -9,7 +9,7 @@ async function createReservation(payload, user) {
   const total = calculateTotal(nights, payload.price_per_night);
 
   return db.transaction(async (client) => {
-    await client.query('SELECT pg_advisory_xact_lock($1)', [payload.listing_id]);
+    await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1::text, 0))', [payload.listing_id]);
 
     const overlap = await reservationRepository.findOverlappingReservation(
       payload.listing_id,

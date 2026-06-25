@@ -1,14 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CalendarDays, CheckCircle2, MapPin, Search, ShieldCheck, SlidersHorizontal, Users } from 'lucide-react';
 import AppShell from '../../components/layout/AppShell';
 import Button from '../../components/ui/Button';
 import ListingCard from '../../components/listings/ListingCard';
-import mockData from '../../mocks/api-mocks.json';
+import { listingService } from '../../services/listings/listingService';
 import styles from './GuestPages.module.css';
 
-const listings = mockData.listings.summaryResponse;
-const saved = new Set(mockData.savedListings);
+const saved = new Set();
 
 const categories = [
   'Todos',
@@ -22,10 +21,33 @@ const categories = [
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const cities = useMemo(() => [...new Set(listings.map((listing) => listing.city))], []);
   const featured = useMemo(() => listings.slice(0, 6), []);
+  const heroListing = featured[1] || featured[0];
   const [destination, setDestination] = useState('');
   const [guests, setGuests] = useState('2');
+
+  useEffect(() => {
+    let mounted = true;
+
+    listingService.listListings()
+      .then((data) => {
+        if (mounted) setListings(data);
+      })
+      .catch(() => {
+        if (mounted) setLoadError('No se pudieron cargar los alojamientos publicados.');
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   function submitSearch(event) {
     event.preventDefault();
@@ -71,13 +93,15 @@ export default function HomePage() {
               </form>
             </div>
 
-            <aside className={styles.heroImage}>
-              <img src={listings[1].coverImage} alt={listings[1].title} />
-              <div className={styles.heroBadge}>
-                <strong>{listings[1].title}</strong>
-                <span>{listings[1].city}, {listings[1].country} - desde ${listings[1].pricePerNight} USD</span>
-              </div>
-            </aside>
+            {heroListing && (
+              <aside className={styles.heroImage}>
+                <img src={heroListing.coverImage} alt={heroListing.title} />
+                <div className={styles.heroBadge}>
+                  <strong>{heroListing.title}</strong>
+                  <span>{heroListing.city}, {heroListing.country} - desde ${heroListing.pricePerNight} USD</span>
+                </div>
+              </aside>
+            )}
           </div>
         </section>
 
@@ -124,13 +148,18 @@ export default function HomePage() {
             ))}
           </div>
 
+          {loading && <p>Cargando alojamientos...</p>}
+          {loadError && <p>{loadError}</p>}
+          {!loading && !loadError && featured.length === 0 && (
+            <p>Aun no hay alojamientos aprobados para mostrar.</p>
+          )}
           <div className={styles.grid}>
             {featured.map((listing, index) => (
               <ListingCard
                 key={listing.id}
                 listing={listing}
                 saved={saved.has(listing.id)}
-                badge={index < 2 ? 'Superhost' : undefined}
+                badge={index < 2 ? 'Verificado' : undefined}
               />
             ))}
           </div>

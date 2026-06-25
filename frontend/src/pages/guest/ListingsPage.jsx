@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import AppShell from '../../components/layout/AppShell';
@@ -6,14 +6,16 @@ import Button from '../../components/ui/Button';
 import EmptyState from '../../components/ui/EmptyState';
 import ListingCard from '../../components/listings/ListingCard';
 import { amenityLabel } from '../../utils/formatters';
-import mockData from '../../mocks/api-mocks.json';
+import { listingService } from '../../services/listings/listingService';
 import styles from './GuestPages.module.css';
 
-const listings = mockData.listings.summaryResponse;
-const saved = new Set(mockData.savedListings);
+const saved = new Set();
 
 export default function ListingsPage() {
   const [searchParams] = useSearchParams();
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const cities = useMemo(() => [...new Set(listings.map((listing) => listing.city))], []);
   const amenities = useMemo(() => [...new Set(listings.flatMap((listing) => listing.amenities))].slice(0, 8), []);
 
@@ -26,6 +28,25 @@ export default function ListingsPage() {
     amenity: '',
     sort: 'recommended',
   });
+
+  useEffect(() => {
+    let mounted = true;
+
+    listingService.listListings()
+      .then((data) => {
+        if (mounted) setListings(data);
+      })
+      .catch(() => {
+        if (mounted) setLoadError('No se pudo cargar el catalogo desde el backend.');
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   function update(name, value) {
     setFilters((current) => ({ ...current, [name]: value }));
@@ -148,18 +169,26 @@ export default function ListingsPage() {
             </div>
           </div>
 
-          {filtered.length > 0 ? (
+          {loading && <p>Cargando catalogo...</p>}
+          {loadError && (
+            <EmptyState
+              title="No se pudo cargar el catalogo"
+              message={loadError}
+            />
+          )}
+
+          {!loading && !loadError && filtered.length > 0 ? (
             <div className={styles.grid}>
               {filtered.map((listing) => (
                 <ListingCard
                   key={listing.id}
                   listing={listing}
                   saved={saved.has(listing.id)}
-                  badge={listing.host.superhost ? 'Superhost' : undefined}
+                  badge={listing.host.superhost ? 'Superhost' : 'Verificado'}
                 />
               ))}
             </div>
-          ) : (
+          ) : !loading && !loadError ? (
             <EmptyState
               title="No encontramos alojamientos"
               message="Ajusta los filtros o vuelve al catalogo completo para explorar mas opciones."
@@ -170,7 +199,7 @@ export default function ListingsPage() {
                 </Button>
               </div>
             </EmptyState>
-          )}
+          ) : null}
         </section>
       </main>
     </AppShell>

@@ -6,7 +6,7 @@ import styles from './Auth.module.css';
 export default function RegisterPage() {
   const { register, loading } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ username: '', email: '', password: '' });
+  const [form, setForm] = useState({ username: '', email: '', password: '', role: 'guest' });
   const [errors, setErrors] = useState({});
   const [showPass, setShowPass] = useState(false);
 
@@ -120,6 +120,16 @@ export default function RegisterPage() {
                 </button>
               </div>
               {errors.password && <span className={styles.fieldError}>{errors.password}</span>}
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="role">Tipo de cuenta</label>
+              <div className={styles.inputWrap}>
+                <select id="role" name="role" value={form.role} onChange={handle}>
+                  <option value="guest">Huesped</option>
+                  <option value="host">Anfitrion</option>
+                </select>
+              </div>
             </div>
 
             <button type="submit" className={styles.btnPrimary} disabled={loading}>

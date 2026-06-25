@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS reservations (
   id SERIAL PRIMARY KEY,
-  listing_id INTEGER NOT NULL,
-  guest_id INTEGER NOT NULL,
-  host_id INTEGER NOT NULL,
+  listing_id UUID NOT NULL,
+  guest_id UUID NOT NULL,
+  host_id UUID NOT NULL,
   from_date DATE NOT NULL,
   to_date DATE NOT NULL,
   nights INTEGER NOT NULL,

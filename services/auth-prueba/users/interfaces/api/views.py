@@ -63,11 +63,27 @@ class LoginView(APIView):
 class UserViewDetail(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, user_id: int):
+    def get(self, request, user_id: str):
         user_view = get_user_view(user_id)
         if not user_view:
             return Response({"detail": "not_found"}, status=status.HTTP_404_NOT_FOUND)
         return Response(UserViewSerializer(user_view).data)
+
+
+class VerifyTokenView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_200_OK)
+            
+        user = request.user
+        roles = ",".join(user.roles) if user.roles else "client"
+        response = Response(status=status.HTTP_200_OK)
+        response["X-User-Id"] = str(user.id)
+        response["X-Host-Id"] = str(user.id)
+        response["X-User-Roles"] = roles
+        return response
 
 
 class MeView(APIView):
@@ -91,7 +107,7 @@ class HostRoleView(APIView):
             event_type="user_role_changed",
             aggregate_id=str(user.id),
             payload={
-                "id": user.id,
+                "id": str(user.id),
                 "previous_roles": previous_roles,
                 "roles": user.roles,
             },
@@ -115,7 +131,7 @@ class HostRoleView(APIView):
             event_type="user_role_changed",
             aggregate_id=str(user.id),
             payload={
-                "id": user.id,
+                "id": str(user.id),
                 "previous_roles": previous_roles,
                 "roles": user.roles,
             },

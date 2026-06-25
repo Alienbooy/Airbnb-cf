@@ -1,12 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, PauseCircle, Pencil, PlusCircle, Search } from 'lucide-react';
+import { Eye, PlusCircle, Search } from 'lucide-react';
 import DashboardShell from '../../components/layout/DashboardShell';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import { money, statusLabel } from '../../utils/formatters';
-import mockData from '../../mocks/api-mocks.json';
+import { listingService } from '../../services/listings/listingService';
 import styles from './HostPages.module.css';
+
+const LISTING_STATUSES = ['active', 'pending', 'rejected', 'inactive'];
 
 function toneForStatus(status) {
   if (status === 'active') return 'success';
@@ -18,7 +20,28 @@ function toneForStatus(status) {
 export default function HostListings() {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('');
-  const listings = mockData.listings.summaryResponse;
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    let mounted = true;
+
+    listingService.getHostListings()
+      .then((items) => {
+        if (mounted) setListings(items);
+      })
+      .catch((error) => {
+        if (mounted) setLoadError(error.response?.data?.message || 'No se pudieron cargar tus alojamientos.');
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -59,7 +82,7 @@ export default function HostListings() {
         </label>
         <select className={styles.select} value={status} onChange={(event) => setStatus(event.target.value)}>
           <option value="">Todos los estados</option>
-          {mockData.meta.listingStatuses.map((item) => (
+          {LISTING_STATUSES.map((item) => (
             <option key={item} value={item}>{statusLabel(item)}</option>
           ))}
         </select>
@@ -67,6 +90,8 @@ export default function HostListings() {
           Limpiar
         </Button>
       </section>
+
+      {loadError && <p className={styles.error}>{loadError}</p>}
 
       <section className={styles.table}>
         <div className={styles.tableHead}>
@@ -77,7 +102,10 @@ export default function HostListings() {
           <span>Acciones</span>
         </div>
 
-        {filtered.map((listing) => (
+        {loading && <p className={styles.tableMessage}>Cargando alojamientos...</p>}
+        {!loading && filtered.length === 0 && <p className={styles.tableMessage}>No hay alojamientos con esos filtros.</p>}
+
+        {!loading && filtered.map((listing) => (
           <article key={listing.id} className={styles.tableRow}>
             <div className={styles.listingCell}>
               <img src={listing.coverImage} alt={listing.title} />
@@ -91,8 +119,6 @@ export default function HostListings() {
             <strong>{money(listing.pricePerNight, listing.currency)}</strong>
             <div className={styles.actions}>
               <Button as={Link} to={`/listings/${listing.id}`} variant="secondary" size="small"><Eye size={15} /> Ver</Button>
-              <Button type="button" variant="ghost" size="small"><Pencil size={15} /> Editar</Button>
-              <Button type="button" variant="ghost" size="small"><PauseCircle size={15} /> Pausar</Button>
             </div>
           </article>
         ))}

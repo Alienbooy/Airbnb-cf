@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 
 const ROLE_PRIORITY = ['admin', 'host', 'guest'];
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function normalizeRoleName(role) {
   if (!role || typeof role !== 'string') {
@@ -44,6 +45,15 @@ function getUserId(payload) {
   return payload.user_id || payload.sub || payload.id || payload.user?.id;
 }
 
+function normalizeUserId(value) {
+  if (!value) {
+    return null;
+  }
+
+  const userId = String(value).trim();
+  return UUID_PATTERN.test(userId) ? userId : null;
+}
+
 function authenticate(req, res, next) {
   const authHeader = req.headers.authorization || '';
   const [scheme, token] = authHeader.split(' ');
@@ -57,12 +67,12 @@ function authenticate(req, res, next) {
 
   try {
     const payload = jwt.verify(token, env.JWT_SECRET);
-    const userId = Number(getUserId(payload));
+    const userId = normalizeUserId(getUserId(payload));
 
-    if (!Number.isInteger(userId) || userId <= 0) {
+    if (!userId) {
       return res.status(401).json({
         error: 'invalid_token',
-        message: 'Token does not contain a valid user id',
+        message: 'Token does not contain a valid UUID user id',
       });
     }
 

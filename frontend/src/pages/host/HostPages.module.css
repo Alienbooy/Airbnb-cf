@@ -153,6 +153,13 @@
   border-top: 1px solid var(--color-border);
 }
 
+.tableMessage {
+  margin: 0;
+  border-top: 1px solid var(--color-border);
+  padding: 18px 16px;
+  color: var(--color-muted);
+}
+
 .listingCell {
   display: grid;
   grid-template-columns: 82px minmax(0, 1fr);

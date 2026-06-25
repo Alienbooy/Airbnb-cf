@@ -149,8 +149,37 @@ services:
       - auth_db
       - kafka
 
+  alojamientos_service:
+    build:
+      context: ./services/alojamientos
+    container_name: alojamientos_service
+    restart: always
+    environment:
+      APP_DATASOURCE_WRITE_URL: jdbc:postgresql://alojamientos_db:5432/alojamientos_write_db
+      APP_DATASOURCE_READ_URL: jdbc:postgresql://alojamientos_db:5432/alojamientos_read_db
+      APP_DATASOURCE_WRITE_PASSWORD: postgres
+      APP_DATASOURCE_READ_PASSWORD: postgres
+    ports:
+      - "8081:8081"
+    depends_on:
+      - alojamientos_db
+
+  alojamientos_db:
+    image: postgres:16
+    container_name: alojamientos_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5441:5432"
+    volumes:
+      - alojamientos_db_data:/var/lib/postgresql/data
+      - ./services/alojamientos/docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+
 
 volumes:
   auth_db_data:
   frontend_node_modules:
   reservations_db_data:
+  alojamientos_db_data:

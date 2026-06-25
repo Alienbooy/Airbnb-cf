@@ -525,6 +525,13 @@
   color: var(--color-muted);
 }
 
+.error {
+  margin: 8px 0;
+  color: var(--color-danger);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .rowActions {
   display: flex;
   flex-wrap: wrap;

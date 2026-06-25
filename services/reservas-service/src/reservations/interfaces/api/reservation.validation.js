@@ -30,8 +30,8 @@ const dateSchema = z
 
 const createReservationSchema = z
   .object({
-    listing_id: z.coerce.number().int().positive(),
-    host_id: z.coerce.number().int().positive(),
+    listing_id: z.string().uuid(),
+    host_id: z.string().uuid(),
     from_date: dateSchema,
     to_date: dateSchema,
     price_per_night: z.coerce.number().finite().positive(),

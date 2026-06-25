@@ -1,5 +1,4 @@
 import gateway from '../api/gateway';
-import mockData from '../../mocks/api-mocks.json';
 
 function toAppRole(roles = []) {
   if (roles.includes('admin')) return 'admin';
@@ -24,18 +23,13 @@ function normalizeBackendUser(user) {
   };
 }
 
-function delay(data) {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(data), 250);
-  });
-}
-
 export const authService = {
   async register(data) {
     await gateway.post('/auth/register', {
       username: data.username.trim(),
       email: data.email.trim(),
       password: data.password,
+      roles: [data.role === 'host' ? 'host' : 'client'],
     });
     
     return { success: true };
@@ -65,7 +59,10 @@ export const authService = {
   },
 
   async getProfile() {
-    return delay(this.getUser() || mockData.auth.profileResponse);
+    const profileResponse = await gateway.get('/auth/profile');
+    const user = normalizeBackendUser(profileResponse.data);
+    localStorage.setItem('user', JSON.stringify(user));
+    return user;
   },
 
   getUser() {
