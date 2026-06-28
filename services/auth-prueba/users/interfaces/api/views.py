@@ -85,6 +85,9 @@ class VerifyTokenView(APIView):
         response["X-User-Roles"] = roles
         return response
 
+    def post(self, request):
+        return self.get(request)
+
 
 class MeView(APIView):
     permission_classes = [permissions.IsAuthenticated]

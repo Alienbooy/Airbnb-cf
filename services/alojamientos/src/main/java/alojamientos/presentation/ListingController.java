@@ -50,15 +50,4 @@ public class ListingController {
         return listingService.searchByCity(city);
     }
 
-    @PatchMapping("/{id}/approve")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ListingResponse approveListing(@PathVariable UUID id) {
-        return listingService.approveListing(id);
-    }
-
-    @PatchMapping("/{id}/reject")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ListingResponse rejectListing(@PathVariable UUID id) {
-        return listingService.rejectListing(id);
-    }
 }

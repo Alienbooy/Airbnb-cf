@@ -6,9 +6,11 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     setUser(authService.getUser());
+    setIsInitialized(true);
   }, []);
 
   async function login(credentials) {
@@ -38,7 +40,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, isInitialized, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -102,6 +102,34 @@ routes:
         max_age: 3600
     upstream_id: alojamientos-service
 
+  - id: admin-api
+    name: admin-api
+    uris:
+      - /api/admin
+      - /api/admin/*
+    priority: 110
+    methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+      - HEAD
+    plugins:
+      forward-auth:
+        uri: "http://auth_service:8000/api/auth/verify"
+        host: "localhost"
+        request_headers: ["Authorization"]
+        upstream_headers: ["X-User-Id", "X-User-Roles", "X-Host-Id"]
+      cors:
+        allow_origins: "http://localhost:5173,http://127.0.0.1:5173,http://localhost:9080,http://127.0.0.1:9080"
+        allow_methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+        allow_headers: "Authorization,Content-Type,Accept,Origin,X-Requested-With"
+        expose_headers: "Authorization,Content-Type"
+        allow_credential: true
+        max_age: 3600
+    upstream_id: admin-service
   - id: backend-api
     name: backend-api
     uri: /api/*
@@ -183,4 +211,15 @@ upstreams:
       send: 6
       read: 6
 
+  - id: admin-service
+    name: admin-service
+    type: roundrobin
+    pass_host: pass
+    nodes:
+      "admin_service:8082": 1
+    timeout:
+      connect: 6
+      send: 6
+      read: 6
 #END
+

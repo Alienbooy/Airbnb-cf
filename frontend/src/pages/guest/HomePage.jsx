@@ -24,8 +24,8 @@ export default function HomePage() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
-  const cities = useMemo(() => [...new Set(listings.map((listing) => listing.city))], []);
-  const featured = useMemo(() => listings.slice(0, 6), []);
+  const cities = useMemo(() => [...new Set(listings.map((listing) => listing.city))], [listings]);
+  const featured = useMemo(() => listings.slice(0, 6), [listings]);
   const heroListing = featured[1] || featured[0];
   const [destination, setDestination] = useState('');
   const [guests, setGuests] = useState('2');

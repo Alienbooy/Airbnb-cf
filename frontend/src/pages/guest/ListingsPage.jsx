@@ -16,8 +16,8 @@ export default function ListingsPage() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
-  const cities = useMemo(() => [...new Set(listings.map((listing) => listing.city))], []);
-  const amenities = useMemo(() => [...new Set(listings.flatMap((listing) => listing.amenities))].slice(0, 8), []);
+  const cities = useMemo(() => [...new Set(listings.map((listing) => listing.city))], [listings]);
+  const amenities = useMemo(() => [...new Set(listings.flatMap((listing) => listing.amenities))].slice(0, 8), [listings]);
 
   const [filters, setFilters] = useState({
     query: '',
@@ -77,7 +77,7 @@ export default function ListingsPage() {
     if (filters.sort === 'price-high') return [...next].sort((a, b) => b.pricePerNight - a.pricePerNight);
     if (filters.sort === 'rating') return [...next].sort((a, b) => b.rating - a.rating);
     return next;
-  }, [filters]);
+  }, [filters, listings]);
 
   return (
     <AppShell>

@@ -42,42 +42,42 @@ export const authService = {
     });
 
     const { access, refresh } = loginResponse.data;
-    localStorage.setItem('token', access);
-    localStorage.setItem('refreshToken', refresh);
+    sessionStorage.setItem('token', access);
+    sessionStorage.setItem('refreshToken', refresh);
 
     const profileResponse = await gateway.get('/auth/profile');
     const user = normalizeBackendUser(profileResponse.data);
-    localStorage.setItem('user', JSON.stringify(user));
+    sessionStorage.setItem('user', JSON.stringify(user));
 
     return { token: access, refreshToken: refresh, user };
   },
 
   async logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('user');
   },
 
   async getProfile() {
     const profileResponse = await gateway.get('/auth/profile');
     const user = normalizeBackendUser(profileResponse.data);
-    localStorage.setItem('user', JSON.stringify(user));
+    sessionStorage.setItem('user', JSON.stringify(user));
     return user;
   },
 
   getUser() {
     if (typeof window === 'undefined') return null;
-    const u = localStorage.getItem('user');
+    const u = sessionStorage.getItem('user');
     return u ? JSON.parse(u) : null;
   },
 
   getToken() {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('token');
+    return sessionStorage.getItem('token');
   },
 
   isAuthenticated() {
     if (typeof window === 'undefined') return false;
-    return !!localStorage.getItem('token');
+    return !!sessionStorage.getItem('token');
   },
 };

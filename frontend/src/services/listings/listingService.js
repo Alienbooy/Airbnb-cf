@@ -103,12 +103,20 @@ export const listingService = {
   },
 
   async approveListing(id) {
-    const response = await gateway.patch(`/api/listings/${id}/approve`);
-    return normalizeListing(response.data);
+    const response = await gateway.post(`/api/admin/listings/${id}/moderate`, {
+      action: 'APPROVE',
+      reason: 'Aprobado desde el panel'
+    });
+    // Our node.js endpoint returns { message, log }, so we need to return the listing somehow or fetch it.
+    // For the UI to update, we can just return the local status change.
+    return { id, status: 'active' };
   },
 
   async rejectListing(id) {
-    const response = await gateway.patch(`/api/listings/${id}/reject`);
-    return normalizeListing(response.data);
+    const response = await gateway.post(`/api/admin/listings/${id}/moderate`, {
+      action: 'REJECT',
+      reason: 'Rechazado desde el panel'
+    });
+    return { id, status: 'rejected' };
   },
 };

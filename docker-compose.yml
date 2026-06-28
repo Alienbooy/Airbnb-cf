@@ -159,6 +159,7 @@ services:
       APP_DATASOURCE_READ_URL: jdbc:postgresql://alojamientos_db:5432/alojamientos_read_db
       APP_DATASOURCE_WRITE_PASSWORD: postgres
       APP_DATASOURCE_READ_PASSWORD: postgres
+      KAFKA_BROKER: kafka:9092
     ports:
       - "8081:8081"
     depends_on:
@@ -178,8 +179,40 @@ services:
 
 
 
+  admin_service:
+    build:
+      context: ./services/admin-reportes
+    container_name: admin_service
+    restart: always
+    environment:
+      DB_HOST: admin_db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: admin_reportes_db
+      KAFKA_BROKER: kafka:9092
+    ports:
+      - "8082:8082"
+    depends_on:
+      - admin_db
+      - kafka
+
+  admin_db:
+    image: postgres:16
+    container_name: admin_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: admin_reportes_db
+    ports:
+      - "5443:5432"
+    volumes:
+      - admin_db_data:/var/lib/postgresql/data
 volumes:
   auth_db_data:
   frontend_node_modules:
   reservations_db_data:
   alojamientos_db_data:
+  admin_db_data:
+
+

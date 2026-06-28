@@ -10,7 +10,7 @@ const gateway = axios.create({
 
 gateway.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -20,7 +20,7 @@ gateway.interceptors.response.use(
   (res) => res,
   (err) => {
     if (typeof window !== 'undefined' && err.response?.status === 401) {
-      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
       window.location.href = '/login';
     }
     return Promise.reject(err);
