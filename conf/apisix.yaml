@@ -130,6 +130,7 @@ routes:
         allow_credential: true
         max_age: 3600
     upstream_id: admin-service
+
   - id: backend-api
     name: backend-api
     uri: /api/*
