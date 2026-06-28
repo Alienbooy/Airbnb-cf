@@ -1,10 +1,10 @@
-# 🏠 AlojateYa (StayBnb)
+# AlojateYa (StayBnb)
 
 Plataforma de alojamientos estilo Airbnb con arquitectura de microservicios, API Gateway y frontend con Server-Side Rendering (SSR).
 
 ---
 
-## 📐 Arquitectura
+## Arquitectura
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -20,23 +20,30 @@ Plataforma de alojamientos estilo Airbnb con arquitectura de microservicios, API
                  │       │  :9080        │
                  │       └───────┬───────┘
                  │               │
-          ┌──────▼──────┐ ┌─────▼──────┐
-          │  Frontend   │ │   Auth     │
-          │  SSR (Node) │ │  Service   │
-          │  Express    │ │  Django    │
-          │  :5173      │ │  :8000     │
-          └─────────────┘ └─────┬──────┘
-                                │
-                          ┌─────▼──────┐   ┌────────────┐
-                          │ PostgreSQL │   │  Redpanda   │
-                          │  :5432     │   │  (Kafka)    │
-                          └────────────┘   │  :9092      │
-                                           └────────────┘
+          ┌──────▼──────┐ ┌─────▼──────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐
+          │  Frontend   │ │   Auth     │ │Alojamiento │ │ Reservas   │ │ Admin      │
+          │  SSR (Node) │ │  Service   │ │  Service   │ │  Service   │ │ Service    │
+          │  Express    │ │  Django    │ │  Java      │ │  Node.js   │ │ Node.js    │
+          │  :5173      │ │  :8000     │ │  :8081     │ │  :4002     │ │ :8082      │
+          └─────────────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └─────┬──────┘
+                                │              │              │              │
+                          ┌─────▼──────┐ ┌─────▼──────┐ ┌─────▼──────┐ ┌─────▼──────┐
+                          │   auth_db  │ │alojamientos│ │reservations│ │  admin_db  │
+                          │ PostgreSQL │ │_db (CQRS)  │ │    -db     │ │ PostgreSQL │
+                          │  :5440     │ │  :5441     │ │   :5442    │ │   :5443    │
+                          └────────────┘ └────────────┘ └────────────┘ └────────────┘
+                                │              │              │              │
+                                └──────────────┼──────────────┼──────────────┘
+                                         ┌─────▼──────┐
+                                         │  Redpanda  │
+                                         │  (Kafka)   │
+                                         │  :9092     │
+                                         └────────────┘
 ```
 
 ---
 
-## 🛠️ Requisitos
+## Requisitos
 
 | Herramienta      | Versión mínima |
 | ---------------- | -------------- |
@@ -45,17 +52,17 @@ Plataforma de alojamientos estilo Airbnb con arquitectura de microservicios, API
 | **Git**          | 2.30+          |
 
 > [!NOTE]
-> No necesitás instalar Node.js, Python ni PostgreSQL en tu máquina. Todo corre dentro de Docker.
+> No necesitás instalar Node.js, Python, Java ni PostgreSQL en tu máquina. Todo corre dentro de Docker.
 
 ---
 
-## 🚀 Levantar el proyecto
+## Levantar el proyecto
 
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/Alienbooy/tu-repo.git
-cd tu-repo
+git clone https://github.com/Alienbooy/Airbnb-cf.git
+cd Airbnb-cf
 ```
 
 ### 2. Configurar variables de entorno
@@ -66,40 +73,29 @@ El servicio de autenticación necesita un archivo `.env`. Ya existe uno preconfi
 services/auth-prueba/.env
 ```
 
-Si necesitás personalizarlo, estos son los valores por defecto:
-
-```env
-DJANGO_SECRET_KEY=contraseñasecreta
-DJANGO_DEBUG=1
-DJANGO_ALLOWED_HOSTS=*
-
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD= contrasena
-DB_NAME_WRITE=airbnb_write
-DB_NAME_READ=airbnb_read
-
-KAFKA_ENABLED=1
-KAFKA_BROKER=kafka:9092
-KAFKA_TOPIC=users.events
-```
-
 ### 3. Levantar todo con Docker Compose
 
 ```bash
 docker-compose up -d
 ```
 
-Esto levanta **5 contenedores**:
+Esto levanta toda la infraestructura, que incluye:
 
-| Contenedor     | Imagen                       | Puerto | Descripción                           |
-| -------------- | ---------------------------- | ------ | ------------------------------------- |
-| `frontend`     | `node:20-alpine`             | 5173   | Frontend React con SSR (Express)      |
-| `apisix`       | `apache/apisix:3.8.0-debian` | 9080   | API Gateway                           |
-| `auth_service` | Build local (Django)         | 8000   | Microservicio de autenticación        |
-| `auth_db`      | `postgres:16`                | 5433   | Base de datos PostgreSQL (CQRS)       |
-| `kafka`        | `redpandadata/redpanda`      | 9092   | Message broker (Redpanda/Kafka)       |
+| Contenedor             | Puerto Host | Descripción                                 |
+| ---------------------- | ----------- | ------------------------------------------- |
+| `frontend`             | 5173        | Frontend React con SSR (Express)            |
+| `apisix`               | 9080        | API Gateway                                 |
+| `auth_service`         | 8000        | Microservicio de Autenticación (Django)     |
+| `auth_worker`          | -           | Publicador asíncrono de eventos (Django)    |
+| `auth_consumer`        | -           | Consumidor asíncrono de eventos (Django)    |
+| `alojamientos_service` | 8081        | Microservicio de Alojamientos (Spring Boot) |
+| `reservations-service` | 4002        | Microservicio de Reservas (Node.js)         |
+| `admin_service`        | 8082        | Microservicio de Administración (Node.js)   |
+| `kafka`                | 9092        | Message broker (Redpanda/Kafka)             |
+| `auth_db`              | 5440        | BD de Autenticación (PostgreSQL)            |
+| `alojamientos_db`      | 5441        | BD de Alojamientos - CQRS (PostgreSQL)      |
+| `reservations-db`      | 5442        | BD de Reservas (PostgreSQL)                 |
+| `admin_db`             | 5443        | BD de Admin y Reportes (PostgreSQL)         |
 
 ### 4. Verificar que todo está corriendo
 
@@ -120,60 +116,37 @@ docker logs frontend -f
 Cuando veas este mensaje, está listo:
 
 ```
-[🚀 PRODUCCIÓN] SSR server → http://localhost:5173
+[PRODUCCIÓN] SSR server → http://localhost:5173
 ```
 
 ---
 
-## 🌐 Acceder a la aplicación
+## Acceder a la aplicación
 
-| URL                              | Descripción                        |
-| -------------------------------- | ---------------------------------- |
-| `http://localhost:5173`          | 🏠 Frontend (acceso directo)       |
-| `http://localhost:9080`          | 🌐 API Gateway (APISIX)           |
-| `http://localhost:8000`          | 🔐 Auth Service (Django, directo) |
-
-### Flujo recomendado
-
-Accedé siempre a través del **frontend directo**: `http://localhost:5173`
+Accedé siempre a través del **frontend directo**: [http://localhost:5173](http://localhost:5173)
 
 Las llamadas a la API del frontend van automáticamente al gateway en `localhost:9080`.
 
 ---
 
-## 🔄 Server-Side Rendering (SSR)
+## Server-Side Rendering (SSR)
 
 El frontend implementa SSR con Express + React. Así funciona:
 
 ```
-1. 🌐 El usuario entra a http://localhost:5173/listings
-
-2. 🖥️ El servidor Express ejecuta renderToString(<App />)
+1.  El usuario entra a http://localhost:5173/listings
+2.  El servidor Express ejecuta renderToString(<App />)
    → Genera el HTML completo (títulos, imágenes, textos)
    → Lo envía al navegador de inmediato
-
-3. 👁️ El usuario ve la página AL INSTANTE (sin pantalla blanca)
-
-4. ⚡ El JavaScript (entry-client.js) se descarga en segundo plano
+3.  El usuario ve la página AL INSTANTE (sin pantalla blanca)
+4.  El JavaScript (entry-client.js) se descarga en segundo plano
    → React "hidrata" la página silenciosamente
    → Los botones, formularios y links se activan
 ```
 
-### Archivos clave del SSR
-
-```
-frontend/
-├── server.js               ← Servidor Express (renderiza HTML en el servidor)
-├── index.html              ← Template HTML con <!--app-html--> como placeholder
-├── src/
-│   ├── entry-client.jsx    ← Punto de entrada del browser (hidratación)
-│   ├── entry-server.jsx    ← Punto de entrada del servidor (renderToString)
-│   └── App.jsx             ← Componente raíz de React
-```
-
 ---
 
-## 📋 Comandos útiles
+##  Comandos útiles
 
 ### Docker
 
@@ -181,40 +154,23 @@ frontend/
 # Levantar todo
 docker-compose up -d
 
-# Ver logs de un servicio
+# Ver logs de un servicio específico
 docker logs frontend -f
-docker logs auth_service -f
-
-# Reiniciar un servicio
-docker-compose restart frontend
+docker logs alojamientos_service -f
 
 # Parar todo
 docker-compose down
 
-# Parar y borrar volúmenes (reset completo)
+# Parar y borrar volúmenes (reset completo de base de datos)
 docker-compose down -v
 
 # Reconstruir un servicio después de cambios
 docker-compose up -d --force-recreate frontend
 ```
 
-### Frontend (dentro del contenedor)
-
-```bash
-# Entrar al contenedor
-docker exec -it frontend sh
-
-# Recompilar manualmente
-npm run build
-
-# Ver archivos compilados
-ls dist/client/
-ls dist/server/
-```
-
 ---
 
-## 🗂️ Estructura del proyecto
+##  Estructura del proyecto
 
 ```
 .
@@ -222,97 +178,44 @@ ls dist/server/
 │   ├── config.yaml                # Config base de APISIX
 │   └── apisix.yaml                # Rutas y upstreams declarativos
 │
-├── frontend/                      # 🖥️ Frontend React + SSR
-│   ├── server.js                  # Servidor Express para SSR
-│   ├── vite.config.js             # Configuración de Vite (build)
-│   ├── package.json               # Dependencias y scripts
-│   ├── index.html                 # Template HTML
-│   └── src/
-│       ├── entry-client.jsx       # Hidratación en el browser
-│       ├── entry-server.jsx       # Renderizado en el servidor
-│       ├── App.jsx                # Componente raíz + rutas
-│       ├── context/               # AuthContext (estado global)
-│       ├── pages/                 # Páginas (auth, guest, host, admin)
-│       ├── routes/                # Guards de autenticación
-│       ├── services/              # API gateway + auth service
-│       └── assets/                # Estilos globales
+├── frontend/                      #  Frontend React + SSR (Vite/Node)
 │
 ├── services/
-│   └── auth-prueba/               # 🔐 Microservicio Auth (Django + DRF)
-│       ├── Dockerfile
-│       ├── .env                   # Variables de entorno
-│       ├── manage.py
-│       ├── auth_service/          # Config Django
-│       ├── users/                 # App de usuarios
-│       └── docker/
-│           └── db/init.sql        # Inicialización de la BD
+│   ├── auth-prueba/               #  Microservicio Auth (Django + DRF)
+│   ├── alojamientos/              #  Microservicio Alojamientos (Java Spring Boot + CQRS)
+│   ├── reservas-service/          #  Microservicio Reservas (Node.js/Express)
+│   └── admin-reportes/            #  Microservicio Admin (Node.js/Express)
 │
-└── docker-compose.yml             # 🐳 Orquestación de todos los servicios
+└── docker-compose.yml             #  Orquestación de todos los servicios
 ```
 
 ---
 
-## 🔐 API Gateway — Rutas
+##  API Gateway — Rutas
 
-El API Gateway (APISIX) enruta las peticiones así:
+El API Gateway (APISIX) valida el JWT y enruta las peticiones así:
 
-| Ruta           | Destino                     | Descripción                    |
-| -------------- | --------------------------- | ------------------------------ |
-| `/auth/*`      | `auth_service:8000`         | Autenticación (login, registro)|
-| `/auth/profile`| `auth_service:8000/api/auth/me` | Perfil del usuario          |
-| `/api/*`       | `auth_service:8000`         | API genérica del backend       |
-| `/*`           | `frontend:5173`             | Frontend SSR (catch-all)       |
-
----
-
-## 🐛 Troubleshooting
-
-### El frontend no arranca
-
-```bash
-# Ver logs para identificar el error
-docker logs frontend
-
-# Si hay error de dependencias, limpiar y reiniciar
-docker-compose down
-docker volume rm airbnb_frontend_node_modules
-docker-compose up -d
-```
-
-### Error de conexión a la base de datos
-
-```bash
-# Verificar que auth_db está corriendo
-docker logs auth_db
-
-# Reiniciar el servicio de auth
-docker-compose restart auth_service
-```
-
-### Los cambios en el frontend no se reflejan
-
-El frontend corre en modo **producción** dentro de Docker. Para ver cambios:
-
-```bash
-# Reconstruir y reiniciar
-docker-compose up -d --force-recreate frontend
-```
-
-> [!TIP]
-> Para desarrollo local con hot-reload (fuera de Docker), podés correr `npm run dev` directamente en la carpeta `frontend/`.
+| Ruta                  | Destino                         | Descripción                    |
+| --------------------- | ------------------------------- | ------------------------------ |
+| `/auth/*`             | `auth_service:8000`             | Autenticación (login, registro)|
+| `/api/admin/*`        | `admin_service:8082`            | Gestión de moderación y logs   |
+| `/api/listings/*`     | `alojamientos_service:8081`     | Búsqueda y gestión de catálogos|
+| `/api/reservations/*` | `reservations-service:4002`     | Gestión de reservas            |
+| `/api/*`              | `auth_service:8000`             | Backend base y validación token|
+| `/*`                  | `frontend:5173`                 | Frontend SSR (catch-all)       |
 
 ---
 
-## 👥 Roles de usuario
+##  Roles de usuario
 
 | Rol       | Acceso                                            |
 | --------- | ------------------------------------------------- |
-| `guest`   | Home, listados, detalle, dashboard de huésped     |
-| `host`    | Dashboard de host, gestión de propiedades         |
-| `admin`   | Panel de administración                           |
+| `guest`   | Home, listados, detalle, dashboard de huésped, ver reservas |
+| `host`    | Dashboard de host, creación y edición de propiedades |
+| `admin`   | Panel de administración, moderación (aprobar/rechazar) |
 
 ---
 
-## 📄 Licencia
+##  Licencia
 
 Proyecto privado — Uso educativo.
